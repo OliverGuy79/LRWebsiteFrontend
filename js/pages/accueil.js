@@ -1,5 +1,89 @@
 // Page Accueil - Style inspiré Transform Church
-export function accueil() {
+import { api } from '../services/api.service.js';
+
+export async function accueil() {
+    console.log("Chargement accueil...");
+
+    // Simulation d'appel API (à remplacer par de vrais appels plus tard)
+    // const sermon = await api.get('/sermons/latest');
+    // const events = await api.get('/events/upcoming');
+    // const news = await api.get('/news/latest');
+
+    // MOCK DATA pour l'instant
+    const sermon = {
+        title: "Message du dimanche",
+        videoUrl: "#/elrtv",
+        image: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=800&q=80"
+    };
+
+    const nextEvents = [
+        {
+            date: "Dim 9 Fév • 10:00",
+            title: "Culte dominical",
+            description: "Rejoignez-nous pour un temps de louange et d'enseignement.",
+            color: "bg-punch"
+        },
+        {
+            date: "Sam 15 Fév • 18:00",
+            title: "Soirée Next Gen",
+            description: "Le rendez-vous mensuel des jeunes de l'église.",
+            color: "bg-glow"
+        },
+        {
+            date: "Mer 19 Fév • 19:30",
+            title: "Soirée de prière",
+            description: "Un moment pour chercher Dieu ensemble.",
+            color: "bg-punch"
+        }
+    ];
+
+    // Récupération des données API
+    let homeGroups = [];
+    try {
+        const homeGroupsResponse = await api.getHomeGroups();
+        if (homeGroupsResponse && homeGroupsResponse.home_groups) {
+            console.log("homeGroups (nb)", homeGroupsResponse.home_groups.length);
+            console.log("homeGroups", homeGroupsResponse.home_groups);
+            homeGroups = homeGroupsResponse.home_groups.slice(0, 9); // Prendre les 9 premiers
+        }
+    } catch (error) {
+        console.error("Erreur chargement home groups:", error);
+    }
+
+    // Construction HTML dynamique des événements
+    const eventsHtml = nextEvents.map(event => `
+        <article class="rounded-2xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition flex">
+            <div class="w-2 ${event.color} flex-shrink-0"></div>
+            <div class="p-5 flex-1">
+                <p class="text-xs font-black tracking-widest text-black/50 uppercase">${event.date}</p>
+                <h3 class="mt-1 text-lg font-black">${event.title}</h3>
+                <p class="mt-1 text-black/70 text-sm">${event.description}</p>
+            </div>
+        </article>
+    `).join('');
+
+    // Construction HTML dynamique des groupes de maison
+    const homeGroupsHtml = `
+        <div class="mt-10 grid gap-0 overflow-hidden rounded-3xl border border-black/10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                ${homeGroups.map(group => `
+                    <a href="#/home-groups" class="group relative aspect-square overflow-hidden bg-black">
+                        <img src="${group.image || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80'}" 
+                             alt="${group.home}" 
+                             class="h-full w-full object-cover grayscale contrast-125 opacity-90 transition duration-300 group-hover:scale-105 group-hover:opacity-100" />
+                        <div class="absolute inset-0 bg-black/25 transition group-hover:bg-black/35"></div>
+                        <div class="absolute inset-0 grid place-items-center px-4 text-center">
+                            <div>
+                                <span class="text-white font-black tracking-wide uppercase text-sm md:text-base block mb-2">${group.home}</span>
+                                <span class="text-white/80 text-xs font-bold uppercase tracking-widest">${group.frequency || ''}</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
     return `
         <!-- HERO -->
         <section class="relative overflow-hidden">
@@ -69,14 +153,21 @@ export function accueil() {
 
             <div class="mt-8 grid gap-6 md:grid-cols-5">
                 <div class="md:col-span-3 rounded-3xl overflow-hidden shadow-soft border border-black/5 bg-ink">
-                    <div class="aspect-video bg-[radial-gradient(circle_at_30%_30%,rgba(124,58,237,.45),transparent_55%),radial-gradient(circle_at_70%_70%,rgba(163,255,18,.30),transparent_55%)]"></div>
+                    <div class="aspect-video relative group cursor-pointer">
+                         <img src="${sermon.image}" class="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition" />
+                         <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="h-16 w-16 bg-paper rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition">
+                                <div class="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-ink border-b-[10px] border-b-transparent ml-1"></div>
+                            </div>
+                         </div>
+                    </div>
                     <div class="p-6 text-paper">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="inline-flex items-center rounded-full bg-paper/10 px-3 py-1 text-xs font-bold">SERMON</span>
                         </div>
-                        <h3 class="mt-3 text-2xl font-black tracking-tight">Message du dimanche</h3>
+                        <h3 class="mt-3 text-2xl font-black tracking-tight">${sermon.title}</h3>
                         <div class="mt-6 flex flex-col sm:flex-row gap-3">
-                            <a class="inline-flex justify-center rounded-full px-6 py-3 font-black bg-paper text-ink hover:opacity-90" href="#/elrtv">
+                            <a class="inline-flex justify-center rounded-full px-6 py-3 font-black bg-paper text-ink hover:opacity-90" href="${sermon.videoUrl}">
                                 Regarder maintenant
                             </a>
                         </div>
@@ -116,32 +207,7 @@ export function accueil() {
 
                     <!-- 3 événements à droite (verticaux) -->
                     <div class="flex flex-col gap-4">
-                        <article class="rounded-2xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition flex">
-                            <div class="w-2 bg-punch flex-shrink-0"></div>
-                            <div class="p-5 flex-1">
-                                <p class="text-xs font-black tracking-widest text-black/50 uppercase">Dim 9 Fév • 10:00</p>
-                                <h3 class="mt-1 text-lg font-black">Culte dominical</h3>
-                                <p class="mt-1 text-black/70 text-sm">Rejoignez-nous pour un temps de louange et d'enseignement.</p>
-                            </div>
-                        </article>
-
-                        <article class="rounded-2xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition flex">
-                            <div class="w-2 bg-glow flex-shrink-0"></div>
-                            <div class="p-5 flex-1">
-                                <p class="text-xs font-black tracking-widest text-black/50 uppercase">Sam 15 Fév • 18:00</p>
-                                <h3 class="mt-1 text-lg font-black">Soirée Next Gen</h3>
-                                <p class="mt-1 text-black/70 text-sm">Le rendez-vous mensuel des jeunes de l'église.</p>
-                            </div>
-                        </article>
-
-                        <article class="rounded-2xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition flex">
-                            <div class="w-2 bg-punch flex-shrink-0"></div>
-                            <div class="p-5 flex-1">
-                                <p class="text-xs font-black tracking-widest text-black/50 uppercase">Mer 19 Fév • 19:30</p>
-                                <h3 class="mt-1 text-lg font-black">Soirée de prière</h3>
-                                <p class="mt-1 text-black/70 text-sm">Un moment pour chercher Dieu ensemble.</p>
-                            </div>
-                        </article>
+                        ${eventsHtml}
 
                         <a href="#/actu" class="mt-2 inline-flex justify-center rounded-full px-5 py-3 font-bold bg-ink text-paper hover:opacity-90">
                             Voir tous les événements
@@ -190,7 +256,7 @@ export function accueil() {
                 </article>
 
                 <article class="rounded-3xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition">
-                    <div class="aspect-[16/10] bg-[linear-gradient(135deg,rgba(124,58,237,.12),rgba(0,0,0,.05))]"></div>
+                    <div class="aspect-[16/10] bg-[linear-gradient(135deg,rgba(124,58,237,.12),rgba(rgba(0,0,0,.05))]"></div>
                     <div class="p-6">
                         <p class="text-xs font-bold text-ink/60 uppercase">Rétrospective</p>
                         <h3 class="mt-2 text-lg font-black">Le bilan de janvier</h3>
@@ -209,75 +275,22 @@ export function accueil() {
             </div>
         </section>
 
-        <!-- MOSAÏQUE -->
+        <!-- MOSAÏQUE - HOME GROUPS -->
         <section class="w-full bg-paper">
             <div class="mx-auto max-w-[95%] px-4 md:px-8 py-12 md:py-16">
                 <h2 class="text-center text-3xl md:text-5xl font-black tracking-tight">
-                    UNE ÉGLISE POUR TOUS !
+                    REJOIGNEZ UN GROUPE DE MAISON !
                 </h2>
+                <p class="mt-4 text-center text-lg text-black/60 max-w-2xl mx-auto">
+                    La vie d'église se vit aussi en semaine. Trouvez un groupe près de chez vous pour partager, prier et grandir ensemble.
+                </p>
 
-                <div class="mt-10 grid gap-0 overflow-hidden rounded-3xl border border-black/10">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                        <a href="#/actu" class="group relative aspect-square overflow-hidden bg-black">
-                            <img src="https://images.unsplash.com/photo-1526498460520-4c246339dccb?auto=format&fit=crop&w=600&q=80" alt="Nos actus" class="h-full w-full object-cover grayscale contrast-125 opacity-90 transition duration-300 group-hover:scale-105 group-hover:opacity-100" />
-                            <div class="absolute inset-0 bg-black/25 transition group-hover:bg-black/35"></div>
-                            <div class="absolute inset-0 grid place-items-center">
-                                <span class="text-white font-black tracking-wide uppercase text-sm md:text-base">NOS ACTUS</span>
-                            </div>
-                        </a>
+                ${homeGroupsHtml}
 
-                        <a href="#/contact" class="group relative aspect-square bg-pink-200/70 overflow-hidden">
-                            <div class="absolute inset-0 bg-white/0 transition group-hover:bg-white/10"></div>
-                            <div class="absolute inset-0 grid place-items-center text-center px-6">
-                                <div class="flex flex-col items-center gap-4">
-                                    <div class="h-14 w-14 rounded-2xl bg-black/10 grid place-items-center">
-                                        <span class="text-2xl">❤</span>
-                                    </div>
-                                    <span class="font-black tracking-wide uppercase text-sm md:text-base">NOUS CONTACTER</span>
-                                </div>
-                            </div>
-                        </a>
-
-                        <a href="#/eglise" class="group relative aspect-square overflow-hidden bg-black">
-                            <img src="https://images.unsplash.com/photo-1520975958225-6b0f6c4f1b0a?auto=format&fit=crop&w=600&q=80" alt="L'église" class="h-full w-full object-cover grayscale contrast-125 opacity-90 transition duration-300 group-hover:scale-105 group-hover:opacity-100" />
-                            <div class="absolute inset-0 bg-black/25 transition group-hover:bg-black/35"></div>
-                            <div class="absolute inset-0 grid place-items-center px-6">
-                                <span class="text-white font-black tracking-wide uppercase text-sm md:text-base text-center">DÉCOUVRIR L'ÉGLISE</span>
-                            </div>
-                        </a>
-
-                        <a href="#/elrtv" class="group relative aspect-square overflow-hidden bg-black">
-                            <img src="https://images.unsplash.com/photo-1520975693411-6c9b26a3bca7?auto=format&fit=crop&w=600&q=80" alt="ELR TV" class="h-full w-full object-cover grayscale contrast-125 opacity-90 transition duration-300 group-hover:scale-105 group-hover:opacity-100" />
-                            <div class="absolute inset-0 bg-black/25 transition group-hover:bg-black/35"></div>
-                            <div class="absolute inset-0 grid place-items-center">
-                                <span class="text-white font-black tracking-wide uppercase text-sm md:text-base">ELR TV</span>
-                            </div>
-                        </a>
-
-                        <a href="#/nextgen" class="group relative aspect-square bg-sky-200/70 overflow-hidden">
-                            <div class="absolute inset-0 bg-white/0 transition group-hover:bg-white/10"></div>
-                            <div class="absolute inset-0 grid place-items-center text-center px-6">
-                                <div class="flex flex-col items-center gap-4">
-                                    <div class="h-14 w-14 rounded-2xl bg-black/10 grid place-items-center">
-                                        <span class="text-2xl">⚡</span>
-                                    </div>
-                                    <span class="font-black tracking-wide uppercase text-sm md:text-base">NEXT GEN</span>
-                                </div>
-                            </div>
-                        </a>
-
-                        <a href="#/boutique" class="group relative aspect-square bg-emerald-200/70 overflow-hidden">
-                            <div class="absolute inset-0 bg-white/0 transition group-hover:bg-white/10"></div>
-                            <div class="absolute inset-0 grid place-items-center text-center px-6">
-                                <div class="flex flex-col items-center gap-4">
-                                    <div class="h-14 w-14 rounded-2xl bg-black/10 grid place-items-center">
-                                        <span class="text-2xl">🛍</span>
-                                    </div>
-                                    <span class="font-black tracking-wide uppercase text-sm md:text-base">BOUTIQUE</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
+                <div class="mt-10 text-center">
+                    <a href="#/home-groups" class="inline-flex justify-center rounded-full px-8 py-4 font-black bg-ink text-paper hover:opacity-90 transition">
+                        Voir tous les groupes
+                    </a>
                 </div>
             </div>
         </section>

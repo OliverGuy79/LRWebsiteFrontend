@@ -15,7 +15,7 @@ import { contact } from './pages/contact.js';
 const contentElement = document.getElementById('content');
 
 // Fonction pour charger une page
-function loadPage(pageName) {
+async function loadPage(pageName) {
     console.log(`Chargement de la page: ${pageName}`);
 
     const pages = {
@@ -28,9 +28,25 @@ function loadPage(pageName) {
         contact
     };
 
-    const pageContent = pages[pageName];
-    if (pageContent) {
-        contentElement.innerHTML = pageContent();
+    const pageFunction = pages[pageName];
+
+    if (pageFunction) {
+        try {
+            // Afficher un loader si le chargement prend du temps (optionnel, à styliser)
+            contentElement.innerHTML = '<div class="flex h-[50vh] items-center justify-center"><div class="h-10 w-10 animate-spin rounded-full border-4 border-ink border-t-transparent"></div></div>';
+
+            // Exécuter la fonction de page (peut être async)
+            const html = await pageFunction();
+            contentElement.innerHTML = html;
+        } catch (error) {
+            console.error("Erreur lors du chargement de la page:", error);
+            contentElement.innerHTML = `
+                <div class="mx-auto max-w-4xl px-4 py-20 text-center">
+                    <h1 class="text-3xl font-bold text-punch">Oups ! Une erreur est survenue.</h1>
+                    <p class="mt-4 text-black/60">Impossible de charger le contenu. Veuillez réessayer plus tard.</p>
+                </div>
+            `;
+        }
     } else {
         contentElement.innerHTML = '<h1>Page non trouvée</h1>';
     }
@@ -39,12 +55,13 @@ function loadPage(pageName) {
 // Définit les routes (correspondant aux liens dans index.html)
 const routes = {
     '/': () => loadPage('accueil'),
-    '/actu': () => {
-        loadPage('accueil');
+    '/actu': async () => {
+        await loadPage('accueil');
+        // Un petit délai supplémentaire pour laisser le temps au navigateur de rendre le DOM
         setTimeout(() => {
             const section = document.getElementById('actu-section');
             if (section) section.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
+        }, 50);
     },
     '/eglise': () => loadPage('eglise'),
     '/elrtv': () => loadPage('elrtv'),
