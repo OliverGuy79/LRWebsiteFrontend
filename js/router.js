@@ -39,7 +39,13 @@ function loadPage(pageName) {
 // Définit les routes (correspondant aux liens dans index.html)
 const routes = {
     '/': () => loadPage('accueil'),
-    '/actu': () => loadPage('actu'),
+    '/actu': () => {
+        loadPage('accueil');
+        setTimeout(() => {
+            const section = document.getElementById('actu-section');
+            if (section) section.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    },
     '/eglise': () => loadPage('eglise'),
     '/elrtv': () => loadPage('elrtv'),
     '/nextgen': () => loadPage('nextgen'),

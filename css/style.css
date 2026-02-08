@@ -1,185 +1,23 @@
 /* ============================================
    ELR - Église La Rencontre
-   Styles principaux
+   Styles complémentaires (Tailwind est utilisé)
    ============================================ */
 
-/* Variables CSS */
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
-    --background-color: #f8f9fa;
-    --text-color: #333;
-    --text-light: #666;
-    --white: #ffffff;
-    --shadow: 0 2px 10px rgba(0,0,0,0.1);
-    --transition: all 0.3s ease;
-}
-
-/* Reset & Base */
+/* Reset minimal - Tailwind gère le reste */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.6;
-}
-
-/* Navigation */
-nav {
-    background: var(--primary-color);
-    padding: 1rem 2rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow);
-}
-
-nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-nav a {
-    color: var(--white);
-    text-decoration: none;
-    font-weight: 500;
-    transition: var(--transition);
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-}
-
-nav a:hover {
-    background: var(--secondary-color);
-}
-
-/* Player persistant */
-#player-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--primary-color);
-    padding: 1rem;
-    display: none;
-    z-index: 1000;
-}
-
-#player-container.active {
-    display: block;
-}
-
+/* Player persistant - styles supplémentaires */
 #player-container audio,
 #player-container video {
     width: 100%;
     max-height: 300px;
 }
 
-/* Contenu principal */
-#content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    min-height: calc(100vh - 200px);
-}
-
-/* Hero section */
-.hero {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: var(--white);
-    padding: 4rem 2rem;
-    text-align: center;
-    border-radius: 10px;
-    margin-bottom: 2rem;
-}
-
-.hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-/* Page headers */
-.page-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    padding: 2rem;
-    background: var(--white);
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-}
-
-.page-header h1 {
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-}
-
-/* Sections */
-section {
-    margin-bottom: 2rem;
-}
-
-/* Cards (news, media, products) */
-.news-grid,
-.media-grid,
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-}
-
-.news-card,
-.media-card,
-.product-card {
-    background: var(--white);
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-}
-
-.news-card:hover,
-.media-card:hover,
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-}
-
-.media-card {
-    cursor: pointer;
-}
-
-.thumbnail {
-    font-size: 3rem;
-    text-align: center;
-    padding: 2rem;
-    background: var(--background-color);
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
-/* Contact */
-.contact-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-.contact-info,
-.contact-form {
-    background: var(--white);
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-}
-
+/* Styles pour les anciennes pages non-Tailwind */
 .contact-form input,
 .contact-form textarea {
     width: 100%;
@@ -188,54 +26,4 @@ section {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-family: inherit;
-}
-
-/* Buttons */
-.btn-submit,
-.btn-add {
-    background: var(--secondary-color);
-    color: var(--white);
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: 1rem;
-}
-
-.btn-submit:hover,
-.btn-add:hover {
-    background: var(--primary-color);
-}
-
-/* Hint */
-.hint {
-    background: #fff3cd;
-    padding: 1rem;
-    border-radius: 5px;
-    border-left: 4px solid #ffc107;
-}
-
-/* Price */
-.price {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: var(--accent-color);
-    margin: 0.5rem 0;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    nav ul {
-        gap: 0.5rem;
-    }
-    
-    nav a {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.9rem;
-    }
-    
-    .hero h1 {
-        font-size: 1.75rem;
-    }
 }
