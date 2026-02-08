@@ -72,7 +72,24 @@
                         </div>
                     </div>
                     <a class="hover:text-punch" href="#/elrtv">ELR TV</a>
-                    <a class="hover:text-punch" href="#/nextgen">Next Gen</a>
+                    <!-- Dropdown Next Gen -->
+                    <div class="group relative cursor-pointer">
+                        <a class="hover:text-punch flex items-center gap-1" href="#/nextgen">
+                            Next Gen
+                            <svg class="h-4 w-4 transition duration-200 group-hover:rotate-180" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                        <div class="absolute left-0 top-full hidden w-48 pt-2 group-hover:block hover:block z-50">
+                            <div class="rounded-xl border border-black/5 bg-paper p-2 shadow-soft flex flex-col gap-1">
+                                <a href="#/nextgen#kidz"
+                                    class="rounded-lg px-4 py-2 hover:bg-black/5 hover:text-punch transition">Kidz</a>
+                                <a href="#/nextgen#teenz"
+                                    class="rounded-lg px-4 py-2 hover:bg-black/5 hover:text-punch transition">Teenz</a>
+                            </div>
+                        </div>
+                    </div>
                     <a class="hover:text-punch" href="#/boutique">Boutique</a>
                     <a class="hover:text-punch" href="#/contact">Contact</a>
                 </nav>
@@ -125,7 +142,6 @@
                 </div>
                 <div id="mobile-eglise-submenu"
                     class="hidden flex flex-col gap-4 pl-6 text-lg font-bold text-black/60 border-l-4 border-punch/20 transition-all duration-300">
-                    <a class="mobile-link hover:text-punch" href="#/eglise">Présentation</a>
                     <a class="mobile-link hover:text-punch" href="#/eglise#vision">Notre vision</a>
                     <a class="mobile-link hover:text-punch" href="#/eglise#team">Équipe pastorale</a>
                     <a class="mobile-link hover:text-punch" href="#/home-groups">Les Home</a>
@@ -134,7 +150,21 @@
             </div>
 
             <a class="mobile-link hover:text-punch" href="#/elrtv">ELR TV</a>
-            <a class="mobile-link hover:text-punch" href="#/nextgen">Next Gen</a>
+            <!-- Sous-menu Mobile Next Gen -->
+            <div class="flex flex-col gap-4">
+                <div id="mobile-nextgen-toggle" class="flex items-center justify-between cursor-pointer">
+                    <span>Next Gen</span>
+                    <svg id="mobile-nextgen-arrow" class="h-6 w-6 opacity-50 transition-transform duration-200"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div id="mobile-nextgen-submenu"
+                    class="hidden flex flex-col gap-4 pl-6 text-lg font-bold text-black/60 border-l-4 border-punch/20 transition-all duration-300">
+                    <a class="mobile-link hover:text-punch" href="#/nextgen#kidz">Kidz</a>
+                    <a class="mobile-link hover:text-punch" href="#/nextgen#teenz">Teenz</a>
+                </div>
+            </div>
             <a class="mobile-link hover:text-punch" href="#/boutique">Boutique</a>
             <a class="mobile-link hover:text-punch" href="#/contact">Contact</a>
 
@@ -152,6 +182,9 @@
         const mobileEgliseToggle = document.getElementById('mobile-eglise-toggle');
         const mobileEgliseSubmenu = document.getElementById('mobile-eglise-submenu');
         const mobileEgliseArrow = document.getElementById('mobile-eglise-arrow');
+        const mobileNextgenToggle = document.getElementById('mobile-nextgen-toggle');
+        const mobileNextgenSubmenu = document.getElementById('mobile-nextgen-submenu');
+        const mobileNextgenArrow = document.getElementById('mobile-nextgen-arrow');
 
         function toggleMenu() {
             mobileMenu.classList.toggle('translate-x-full');
@@ -162,22 +195,32 @@
             }
         }
 
-        function toggleEgliseSubmenu(e) {
-            e.stopPropagation();
-            const isHidden = mobileEgliseSubmenu.classList.contains('hidden');
+        function toggleSubmenu(submenu, arrow) {
+            const isHidden = submenu.classList.contains('hidden');
             if (isHidden) {
-                mobileEgliseSubmenu.classList.remove('hidden');
-                mobileEgliseArrow.classList.add('rotate-180');
+                submenu.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
             } else {
-                mobileEgliseSubmenu.classList.add('hidden');
-                mobileEgliseArrow.classList.remove('rotate-180');
+                submenu.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
             }
         }
 
         mobileMenuBtn.addEventListener('click', toggleMenu);
         closeMenuBtn.addEventListener('click', toggleMenu);
+
         if (mobileEgliseToggle) {
-            mobileEgliseToggle.addEventListener('click', toggleEgliseSubmenu);
+            mobileEgliseToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSubmenu(mobileEgliseSubmenu, mobileEgliseArrow);
+            });
+        }
+
+        if (mobileNextgenToggle) {
+            mobileNextgenToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSubmenu(mobileNextgenSubmenu, mobileNextgenArrow);
+            });
         }
 
         mobileLinks.forEach(link => {
