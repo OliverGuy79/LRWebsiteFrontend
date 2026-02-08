@@ -23,7 +23,7 @@ export function actu() {
             <section class="grid gap-8 lg:grid-cols-12">
                 <!-- Main feature -->
                 <article class="lg:col-span-8">
-                    <a href="#" class="group block">
+                    <a href="#/article" class="group block">
                         <div class="rounded-2xl overflow-hidden shadow-soft border border-rule">
                             <div
                                 class="aspect-[16/9] bg-[linear-gradient(135deg,rgba(124,58,237,.18),rgba(0,0,0,.06))]">
@@ -63,32 +63,32 @@ export function actu() {
                     <div class="sticky top-6">
                         <div class="flex items-end justify-between">
                             <h2 class="text-sm font-black tracking-widest uppercase text-black/60">À lire</h2>
-                            <a class="text-xs font-bold hover:text-accent" href="#">Voir tout</a>
+                            <a class="text-xs font-bold hover:text-accent" href="#/article">Voir tout</a>
                         </div>
 
                         <div class="mt-4 divide-y divide-rule border border-rule rounded-2xl overflow-hidden">
-                            <a href="#" class="block p-4 bg-paper hover:bg-haze">
+                            <a href="#/article" class="block p-4 bg-paper hover:bg-haze">
                                 <div class="text-xs font-bold uppercase tracking-widest text-black/60">Critique</div>
                                 <div class="mt-1 font-black leading-snug">
                                     10 morceaux qui redéfinissent la pop minimaliste
                                 </div>
                                 <div class="mt-2 text-xs text-black/55">4 min • Par R. Diallo</div>
                             </a>
-                            <a href="#" class="block p-4 bg-paper hover:bg-haze">
+                            <a href="#/article" class="block p-4 bg-paper hover:bg-haze">
                                 <div class="text-xs font-bold uppercase tracking-widest text-black/60">News</div>
                                 <div class="mt-1 font-black leading-snug">
                                     Un festival annonce une scène “zéro plastique” — comment ça marche ?
                                 </div>
                                 <div class="mt-2 text-xs text-black/55">3 min • Par N. Petit</div>
                             </a>
-                            <a href="#" class="block p-4 bg-paper hover:bg-haze">
+                            <a href="#/article" class="block p-4 bg-paper hover:bg-haze">
                                 <div class="text-xs font-bold uppercase tracking-widest text-black/60">Essai</div>
                                 <div class="mt-1 font-black leading-snug">
                                     Le streaming a-t-il tué la “face B” ?
                                 </div>
                                 <div class="mt-2 text-xs text-black/55">6 min • Par L. Ben</div>
                             </a>
-                            <a href="#" class="block p-4 bg-paper hover:bg-haze">
+                            <a href="#/article" class="block p-4 bg-paper hover:bg-haze">
                                 <div class="text-xs font-bold uppercase tracking-widest text-black/60">Playlist</div>
                                 <div class="mt-1 font-black leading-snug">
                                     45 minutes pour écrire, respirer, recommencer
@@ -103,7 +103,7 @@ export function actu() {
                             <div class="mt-2 font-black text-lg leading-snug font-serif">
                                 “La décennie 2010” — notre série en 12 épisodes
                             </div>
-                            <a href="#"
+                            <a href="#/article"
                                 class="mt-4 inline-flex rounded-full px-4 py-2 text-sm font-bold bg-ink text-paper hover:opacity-90">
                                 Découvrir
                             </a>
@@ -120,7 +120,7 @@ export function actu() {
                         <p class="mt-2 text-black/70">Disposition en grille avec “règles” fines, comme un vrai journal.
                         </p>
                     </div>
-                    <a class="hidden md:inline text-sm font-bold hover:text-accent" href="#">Tout voir →</a>
+                    <a class="hidden md:inline text-sm font-bold hover:text-accent" href="#/article">Tout voir →</a>
                 </div>
 
                 <div class="mt-8 grid gap-8 lg:grid-cols-12">
@@ -128,7 +128,7 @@ export function actu() {
                     <div class="lg:col-span-4">
                         <div class="border-t border-rule pt-6">
                             <article class="group">
-                                <a href="#" class="block">
+                                <a href="#/article" class="block">
                                     <div class="text-xs font-bold tracking-widest uppercase text-black/60">News</div>
                                     <h3
                                         class="mt-2 font-black text-xl leading-snug font-serif group-hover:text-accent">
@@ -144,7 +144,7 @@ export function actu() {
                             <div class="my-6 h-px bg-rule"></div>
 
                             <article class="group">
-                                <a href="#" class="block">
+                                <a href="#/article" class="block">
                                     <div class="text-xs font-bold tracking-widest uppercase text-black/60">Interview
                                     </div>
                                     <h3
@@ -158,7 +158,7 @@ export function actu() {
                             <div class="my-6 h-px bg-rule"></div>
 
                             <article class="group">
-                                <a href="#" class="block">
+                                <a href="#/article" class="block">
                                     <div class="text-xs font-bold tracking-widest uppercase text-black/60">Essai</div>
                                     <h3
                                         class="mt-2 font-black text-xl leading-snug font-serif group-hover:text-accent">
@@ -176,7 +176,7 @@ export function actu() {
                             <div class="grid gap-6">
                                 <article
                                     class="group rounded-2xl overflow-hidden border border-rule bg-paper hover:bg-haze">
-                                    <a href="#" class="block">
+                                    <a href="#/article" class="block">
                                         <div
                                             class="aspect-[16/9] bg-[linear-gradient(135deg,rgba(0,0,0,.06),rgba(124,58,237,.12))]">
                                         </div>
@@ -198,7 +198,7 @@ export function actu() {
 
                                 <article
                                     class="group rounded-2xl overflow-hidden border border-rule bg-paper hover:bg-haze">
-                                    <a href="#" class="block">
+                                    <a href="#/article" class="block">
                                         <div
                                             class="aspect-[16/9] bg-[linear-gradient(135deg,rgba(124,58,237,.10),rgba(0,0,0,.06))]">
                                         </div>
@@ -223,11 +223,11 @@ export function actu() {
                         <div class="border-t border-rule pt-6">
                             <div class="flex items-end justify-between">
                                 <h3 class="text-sm font-black tracking-widest uppercase text-black/60">Reviews</h3>
-                                <a class="text-xs font-bold hover:text-accent" href="#">Plus</a>
+                                <a class="text-xs font-bold hover:text-accent" href="#/article">Plus</a>
                             </div>
 
                             <div class="mt-4 space-y-4">
-                                <a href="#" class="block rounded-2xl border border-rule p-4 hover:bg-haze">
+                                <a href="#/article" class="block rounded-2xl border border-rule p-4 hover:bg-haze">
                                     <div class="flex items-start gap-3">
                                         <div
                                             class="h-14 w-14 rounded-xl bg-[linear-gradient(135deg,rgba(0,0,0,.08),rgba(124,58,237,.12))] border border-rule">
@@ -243,7 +243,7 @@ export function actu() {
                                     </div>
                                 </a>
 
-                                <a href="#" class="block rounded-2xl border border-rule p-4 hover:bg-haze">
+                                <a href="#/article" class="block rounded-2xl border border-rule p-4 hover:bg-haze">
                                     <div class="flex items-start gap-3">
                                         <div
                                             class="h-14 w-14 rounded-xl bg-[linear-gradient(135deg,rgba(124,58,237,.12),rgba(0,0,0,.06))] border border-rule">
@@ -259,7 +259,7 @@ export function actu() {
                                     </div>
                                 </a>
 
-                                <a href="#" class="block rounded-2xl border border-rule p-4 hover:bg-haze">
+                                <a href="#/article" class="block rounded-2xl border border-rule p-4 hover:bg-haze">
                                     <div class="flex items-start gap-3">
                                         <div
                                             class="h-14 w-14 rounded-xl bg-[linear-gradient(135deg,rgba(0,0,0,.06),rgba(0,0,0,.10))] border border-rule">
@@ -306,7 +306,7 @@ export function actu() {
             <section class="mt-14">
                 <div class="flex items-end justify-between gap-6">
                     <h2 class="text-2xl md:text-3xl font-black font-serif">En ce moment</h2>
-                    <a class="text-sm font-bold hover:text-accent" href="#">Explorer →</a>
+                    <a class="text-sm font-bold hover:text-accent" href="#/article">Explorer →</a>
                 </div>
 
                 <div class="mt-6 border-t border-rule">
@@ -314,7 +314,7 @@ export function actu() {
                         <!-- left list -->
                         <div class="lg:col-span-8 border-r border-rule">
                             <div class="divide-y divide-rule">
-                                <a href="#" class="block py-5 pr-0 lg:pr-8 hover:bg-haze">
+                                <a href="#/article" class="block py-5 pr-0 lg:pr-8 hover:bg-haze">
                                     <div class="flex items-start gap-5">
                                         <div
                                             class="hidden sm:block h-20 w-20 rounded-xl border border-rule bg-[linear-gradient(135deg,rgba(0,0,0,.06),rgba(124,58,237,.10))]">
@@ -333,7 +333,7 @@ export function actu() {
                                     </div>
                                 </a>
 
-                                <a href="#" class="block py-5 pr-0 lg:pr-8 hover:bg-haze">
+                                <a href="#/article" class="block py-5 pr-0 lg:pr-8 hover:bg-haze">
                                     <div class="flex items-start gap-5">
                                         <div
                                             class="hidden sm:block h-20 w-20 rounded-xl border border-rule bg-[linear-gradient(135deg,rgba(124,58,237,.10),rgba(0,0,0,.06))]">
@@ -349,7 +349,7 @@ export function actu() {
                                     </div>
                                 </a>
 
-                                <a href="#" class="block py-5 pr-0 lg:pr-8 hover:bg-haze">
+                                <a href="#/article" class="block py-5 pr-0 lg:pr-8 hover:bg-haze">
                                     <div class="flex items-start gap-5">
                                         <div
                                             class="hidden sm:block h-20 w-20 rounded-xl border border-rule bg-[linear-gradient(135deg,rgba(0,0,0,.08),rgba(0,0,0,.02))]">

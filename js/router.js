@@ -8,6 +8,7 @@ import { eglise } from './pages/eglise.js'; // Base
 import { elrtv } from './pages/elrtv.js';
 import { nextgen } from './pages/nextgen.js'; // Base
 import { contact } from './pages/contact.js';
+import { article } from './pages/article.js';
 
 // Custom Additions (Restored)
 import { actu } from './pages/actu.js';
@@ -39,7 +40,8 @@ async function loadPage(pageName) {
         homeGroups,
         services,
         boutique,
-        contact
+        contact,
+        article
     };
 
     const pageContent = pages[pageName];
@@ -79,6 +81,7 @@ const routes = {
     '/services': () => loadPage('services'),
     '/boutique': () => loadPage('boutique'),
     '/contact': () => loadPage('contact'),
+    '/article': () => loadPage('article'),
 };
 
 // Chargement initial au démarrage
