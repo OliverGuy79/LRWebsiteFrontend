@@ -87,13 +87,15 @@ const routes = {
 // Chargement initial au démarrage
 window.addEventListener('DOMContentLoaded', () => {
     console.log("Chargement initial au démarrage");
-    const path = window.location.hash.slice(1) || '/';
+    const hash = window.location.hash.slice(1) || '/';
+    const path = hash.split('?')[0];
     routes[path]?.();
 });
 
 // Permet de charger des pages sans recharger la page
 window.addEventListener('hashchange', () => {
     console.log("hashchange");
-    const path = window.location.hash.slice(1) || '/';
+    const hash = window.location.hash.slice(1) || '/';
+    const path = hash.split('?')[0];
     routes[path]?.();
 });
