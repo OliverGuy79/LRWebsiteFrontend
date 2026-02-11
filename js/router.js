@@ -4,9 +4,7 @@
 
 // Import des pages (Integration Base + Custom Additions)
 import { accueil } from './pages/accueil.js';
-import { eglise } from './pages/eglise.js'; // Base
 import { elrtv } from './pages/elrtv.js';
-import { nextgen } from './pages/nextgen.js'; // Base
 import { contact } from './pages/contact.js';
 import { article } from './pages/article.js';
 
@@ -30,9 +28,7 @@ async function loadPage(pageName) {
     const pages = {
         accueil,
         actu,
-        eglise,
         elrtv,
-        nextgen,
         kidz,
         teenz,
         vision,
@@ -79,14 +75,12 @@ const routes = {
             if (section) section.scrollIntoView({ behavior: 'smooth' });
         }, 50);
     },
-    '/eglise': () => loadPage('eglise'),
     '/elrtv': () => loadPage('elrtv'),
-    '/nextgen': () => loadPage('nextgen'),
     '/kidz': () => loadPage('kidz'),
     '/teenz': () => loadPage('teenz'),
     '/vision': () => loadPage('vision'),
-    '/equipe': () => loadPage('equipe'),
-    '/homes': () => loadPage('homeGroups'),
+    '/pastoral-team': () => loadPage('equipe'),
+    '/home-groups': () => loadPage('homeGroups'),
     '/services': () => loadPage('services'),
     '/boutique': () => loadPage('boutique'),
     '/contact': () => loadPage('contact'),

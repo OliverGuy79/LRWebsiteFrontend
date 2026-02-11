@@ -27,3 +27,13 @@
     border-radius: 5px;
     font-family: inherit;
 }
+
+/* Masquer la scrollbar tout en gardant le défilement */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

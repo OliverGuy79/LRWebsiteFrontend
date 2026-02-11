@@ -7,7 +7,10 @@ export class ApiService {
         // Pour le développement local avec proxy, on veut une URL vide (relative).
         // Vite expose uniquement les variables commençant par VITE_.
         this.baseUrl = import.meta.env.VITE_API_URL || '';
+        this.youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY || '';
+        this.youtubeBaseUrl = 'https://www.googleapis.com/youtube/v3';
         console.log("API Base URL:", this.baseUrl || '(relative/proxy)');
+        if (!this.youtubeApiKey) console.warn("YouTube API Key missing (VITE_YOUTUBE_API_KEY)");
     }
 
     /**
@@ -116,6 +119,43 @@ export class ApiService {
     // --- SYSTEM ---
     async getHealth() {
         return this.get('/api/health');
+    }
+
+    // --- YOUTUBE DATA API ---
+    /**
+     * Fetch playlists from a YouTube channel
+     * @param {string} channelId 
+     */
+    async getYoutubePlaylists(channelId = 'UCJ6ItUaNtiSYZBy2sUavMFQ') {
+        if (!this.youtubeApiKey) throw new Error("Clé d'API YouTube manquante.");
+
+        const url = new URL(`${this.youtubeBaseUrl}/playlists`);
+        url.searchParams.append('part', 'snippet,contentDetails');
+        url.searchParams.append('channelId', channelId);
+        url.searchParams.append('maxResults', '10');
+        url.searchParams.append('key', this.youtubeApiKey);
+
+        const response = await fetch(url.toString());
+        if (!response.ok) throw new Error(`YouTube API Error: ${response.statusText}`);
+        return await response.json();
+    }
+
+    /**
+     * Fetch videos from a YouTube playlist
+     * @param {string} playlistId 
+     */
+    async getYoutubePlaylistItems(playlistId) {
+        if (!this.youtubeApiKey) throw new Error("Clé d'API YouTube manquante.");
+
+        const url = new URL(`${this.youtubeBaseUrl}/playlistItems`);
+        url.searchParams.append('part', 'snippet,contentDetails');
+        url.searchParams.append('playlistId', playlistId);
+        url.searchParams.append('maxResults', '10');
+        url.searchParams.append('key', this.youtubeApiKey);
+
+        const response = await fetch(url.toString());
+        if (!response.ok) throw new Error(`YouTube API Error: ${response.statusText}`);
+        return await response.json();
     }
 }
 
