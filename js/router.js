@@ -2,14 +2,23 @@
 // Routeur minimaliste SPA
 // --------------------------------------------------
 
-// Import des pages
+// Import des pages (Integration Base + Custom Additions)
 import { accueil } from './pages/accueil.js';
-import { actu } from './pages/actu.js';
-import { eglise } from './pages/eglise.js';
+import { eglise } from './pages/eglise.js'; // Base
 import { elrtv } from './pages/elrtv.js';
-import { nextgen } from './pages/nextgen.js';
-import { boutique } from './pages/boutique.js';
+import { nextgen } from './pages/nextgen.js'; // Base
 import { contact } from './pages/contact.js';
+import { article } from './pages/article.js';
+
+// Custom Additions (Restored)
+import { actu } from './pages/actu.js';
+import { kidz } from './pages/kidz.js';
+import { teenz } from './pages/teenz.js';
+import { vision } from './pages/vision.js';
+import { equipe } from './pages/equipe.js';
+import { homeGroups } from './pages/home-groups.js';
+import { services } from './pages/services.js';
+import { boutique } from './pages/boutique.js';
 
 // Conteneur principal
 const contentElement = document.getElementById('content');
@@ -24,8 +33,15 @@ async function loadPage(pageName) {
         eglise,
         elrtv,
         nextgen,
+        kidz,
+        teenz,
+        vision,
+        equipe,
+        homeGroups,
+        services,
         boutique,
-        contact
+        contact,
+        article
     };
 
     const pageFunction = pages[pageName];
@@ -66,20 +82,29 @@ const routes = {
     '/eglise': () => loadPage('eglise'),
     '/elrtv': () => loadPage('elrtv'),
     '/nextgen': () => loadPage('nextgen'),
+    '/kidz': () => loadPage('kidz'),
+    '/teenz': () => loadPage('teenz'),
+    '/vision': () => loadPage('vision'),
+    '/equipe': () => loadPage('equipe'),
+    '/homes': () => loadPage('homeGroups'),
+    '/services': () => loadPage('services'),
     '/boutique': () => loadPage('boutique'),
     '/contact': () => loadPage('contact'),
+    '/article': () => loadPage('article'),
 };
 
 // Chargement initial au démarrage
 window.addEventListener('DOMContentLoaded', () => {
     console.log("Chargement initial au démarrage");
-    const path = window.location.hash.slice(1) || '/';
+    const hash = window.location.hash.slice(1) || '/';
+    const path = hash.split('?')[0];
     routes[path]?.();
 });
 
 // Permet de charger des pages sans recharger la page
 window.addEventListener('hashchange', () => {
     console.log("hashchange");
-    const path = window.location.hash.slice(1) || '/';
+    const hash = window.location.hash.slice(1) || '/';
+    const path = hash.split('?')[0];
     routes[path]?.();
 });

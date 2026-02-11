@@ -7,20 +7,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/css/style.css">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+                        serif: ['Spectral', 'ui-serif', 'Georgia']
+                    },
                     colors: {
                         ink: '#0b0b0f',
                         paper: '#ffffff',
                         haze: '#f5f6fa',
                         punch: '#7c3aed',
                         glow: '#a3ff12',
+                        rule: 'rgba(11,11,15,.12)',
                     },
                     boxShadow: {
                         soft: '0 12px 30px rgba(0,0,0,.12)'
