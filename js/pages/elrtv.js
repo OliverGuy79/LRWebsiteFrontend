@@ -115,17 +115,20 @@ export async function elrtv() {
                     S'abonner
                 </a>
             </div>
-            
-            <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-heavy border border-black/5 bg-ink">
-                <iframe 
+
+            <!-- Media Player Container -->
+            <div id="player-container" class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-soft border border-black/5 bg-ink">
+                <iframe
                     id="youtube-player-iframe"
                     class="absolute inset-0 w-full h-full"
-                    src="https://www.youtube.com/embed/videoseries?list=${activePlaylistId}" 
-                    title="YouTube video player" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    src="https://www.youtube.com/embed/videoseries?list=${activePlaylistId}"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen>
                 </iframe>
+                <audio id="audio-player" class="hidden" controls></audio>
+                <video id="video-player" class="hidden absolute inset-0 w-full h-full object-contain bg-ink" controls></video>
             </div>
         </section>
 

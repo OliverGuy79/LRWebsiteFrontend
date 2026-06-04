@@ -142,7 +142,7 @@ export async function teenz() {
                             </p>
                             <div class="mt-5">
                                 <a class="inline-flex rounded-full px-5 py-2.5 font-bold bg-ink text-paper hover:opacity-90"
-                                    href="#">
+                                    href="#/contact">
                                     Planning Collège
                                 </a>
                             </div>
@@ -160,7 +160,7 @@ export async function teenz() {
                             </p>
                             <div class="mt-5">
                                 <a class="inline-flex rounded-full px-5 py-2.5 font-bold bg-ink text-paper hover:opacity-90"
-                                    href="#">
+                                    href="#/contact">
                                     Planning Lycée
                                 </a>
                             </div>

@@ -190,7 +190,7 @@ export async function accueil() {
                 <div class="max-w-3xl">
                     <p class="inline-flex items-center gap-2 rounded-full bg-ink text-paper px-4 py-1.5 text-xs font-bold tracking-wide">
                         <span class="h-2 w-2 rounded-full bg-glow"></span>
-                        DIMANCHE • 09:00
+                        DIMANCHE • 10:00
                     </p>
 
                     <h1 class="mt-6 text-4xl md:text-6xl font-black tracking-tight leading-[1.02] text-paper">
@@ -206,7 +206,7 @@ export async function accueil() {
                         <a href="#/elrtv" class="inline-flex justify-center rounded-full px-6 py-3 font-bold bg-glow text-ink hover:opacity-90">
                             Regarder en ligne
                         </a>
-                        <a href="#/eglise" class="inline-flex justify-center rounded-full px-6 py-3 font-bold border border-paper/30 text-paper hover:bg-paper/10">
+                        <a href="#/vision" class="inline-flex justify-center rounded-full px-6 py-3 font-bold border border-paper/30 text-paper hover:bg-paper/10">
                             Découvrir l'église
                         </a>
                     </div>

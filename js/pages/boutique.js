@@ -58,24 +58,45 @@ window.closeReservationModal = () => {
     }, 300);
 };
 
-window.submitReservation = (event) => {
+window.submitReservation = async (event) => {
     event.preventDefault();
 
     const formData = {
         product: window.currentReservationProduct,
-        name: document.getElementById('res-name').value,
-        firstname: document.getElementById('res-firstname').value,
-        phone: document.getElementById('res-phone').value,
-        quantity: document.getElementById('res-qty').value,
-        size: document.getElementById('res-size').value,
-        color: document.getElementById('res-color').value
+        name: document.getElementById('res-name').value.trim(),
+        firstname: document.getElementById('res-firstname').value.trim(),
+        phone: document.getElementById('res-phone').value.trim(),
+        quantity: parseInt(document.getElementById('res-qty').value, 10) || 1,
+        size: document.getElementById('res-size').value || null,
+        color: document.getElementById('res-color').value.trim() || null
     };
 
-    console.log("Réservation envoyée :", formData);
+    const btn = document.querySelector('#reservation-form button[type="submit"]');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
 
-    // Afficher le message de succès
-    document.getElementById('reservation-form').classList.add('hidden');
-    document.getElementById('reservation-success').classList.remove('hidden');
+    try {
+        const response = await fetch('/api/boutique/reservations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.detail || `Erreur ${response.status}`);
+        }
+
+        // Afficher le message de succès
+        document.getElementById('reservation-form').classList.add('hidden');
+        document.getElementById('reservation-success').classList.remove('hidden');
+    } catch (error) {
+        console.error('Erreur réservation:', error);
+        alert('Impossible d\'envoyer la réservation. Veuillez réessayer plus tard.');
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
 };
 
 export async function boutique() {

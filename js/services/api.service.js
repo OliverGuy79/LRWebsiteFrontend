@@ -121,6 +121,36 @@ export class ApiService {
         return this.get('/api/health');
     }
 
+    // --- CONTACT ---
+    async submitContact(data) {
+        return this.post('/api/contact', data);
+    }
+
+    // --- BOUTIQUE RESERVATIONS ---
+    async submitReservation(data) {
+        return this.post('/api/boutique/reservations', data);
+    }
+
+    // --- GENERIC POST ---
+    async post(endpoint, body) {
+        const base = this.baseUrl && this.baseUrl.startsWith('http')
+            ? this.baseUrl
+            : window.location.origin + (this.baseUrl || '');
+        const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+        const url = new URL(cleanEndpoint, base);
+
+        const response = await fetch(url.toString(), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.detail || `Erreur ${response.status}`);
+        }
+        return await response.json();
+    }
+
     // --- YOUTUBE DATA API ---
     /**
      * Fetch playlists from a YouTube channel

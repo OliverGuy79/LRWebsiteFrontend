@@ -151,7 +151,7 @@ export async function kidz() {
                             </p>
                             <div class="mt-5">
                                 <a class="inline-flex rounded-full px-5 py-2.5 font-bold bg-ink text-paper hover:opacity-90"
-                                    href="#">
+                                    href="#/contact">
                                     Check out our Family Guide
                                 </a>
                             </div>
@@ -169,7 +169,7 @@ export async function kidz() {
                             </p>
                             <div class="mt-5">
                                 <a class="inline-flex rounded-full px-5 py-2.5 font-bold bg-ink text-paper hover:opacity-90"
-                                    href="#">
+                                    href="#/contact">
                                     Check out our Family Guide
                                 </a>
                             </div>
@@ -190,7 +190,7 @@ export async function kidz() {
                     </p>
                 </div>
                 <a class="hidden md:inline-flex rounded-full px-5 py-2 font-bold border border-black/10 hover:border-black/30"
-                    href="#">
+                    href="#/contact">
                     Formulaire “Je suis nouveau”
                 </a>
             </div>
@@ -227,7 +227,7 @@ export async function kidz() {
 
             <div class="mt-8 md:hidden">
                 <a class="inline-flex w-full justify-center rounded-full px-5 py-3 font-bold bg-ink text-paper hover:opacity-90"
-                    href="#">
+                    href="#/contact">
                     Formulaire “Je suis nouveau”
                 </a>
             </div>
@@ -294,11 +294,11 @@ export async function kidz() {
 
                 <div class="mt-10 flex flex-col sm:flex-row gap-3">
                     <a class="inline-flex justify-center rounded-full px-6 py-3 font-black bg-glow text-ink hover:opacity-90"
-                        href="#">
+                        href="#/contact">
                         Family Guide
                     </a>
                     <a class="inline-flex justify-center rounded-full px-6 py-3 font-black border border-paper/20 hover:border-paper/40"
-                        href="#">
+                        href="#/contact">
                         Contact équipe Kidz
                     </a>
                 </div>

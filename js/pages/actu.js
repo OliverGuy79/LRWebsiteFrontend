@@ -71,7 +71,7 @@ export async function actu() {
             <article class="group">
                 <a href="#/article?id=${article.id}" class="block">
                     <div class="text-xs font-bold tracking-widest uppercase text-black/60 group-hover:text-punch transition-colors">${category}</div>
-                    <h3 class="mt-2 font-black text-xl leading-snug font-serif group-hover:text-accent">
+                    <h3 class="mt-2 font-black text-xl leading-snug font-serif group-hover:text-punch">
                         ${article.title}
                     </h3>
                     <p class="mt-2 text-black/70 line-clamp-2">
@@ -155,7 +155,7 @@ export async function actu() {
                     </div>
                 </div>
                 
-                <div class="lg:col-span-4">
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                      <div class="border-t border-rule pt-6">
                         ${gridHtml}
                      </div>
