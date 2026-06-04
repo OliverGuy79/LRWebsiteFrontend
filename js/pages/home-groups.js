@@ -57,8 +57,8 @@ export async function homeGroups() {
         <div class="snap-center shrink-0 w-full md:w-[45vw] lg:w-[30vw] group/card relative overflow-hidden rounded-3xl border border-rule shadow-soft bg-paper transition-all hover:scale-[1.01]">
             <div class="flex flex-col h-full">
                 <!-- Image -->
-                <div class="h-56 relative overflow-hidden">
-                    <img src="${image}" alt="${name}" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover/card:scale-110">
+                <div class="aspect-square relative overflow-hidden">
+                    <img src="${image}" alt="${name}" class="absolute inset-0 w-full h-full object-cover object-[center_10%] transition duration-700 group-hover/card:scale-110">
                     <div class="absolute inset-0 bg-black/10 group-hover/card:bg-transparent transition-colors"></div>
                     
                     ${group.frequency ? `

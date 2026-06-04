@@ -1,30 +1,38 @@
 // Page Accueil - Style inspiré Transform Church
 import { api } from '../services/api.service.js';
 
+const YOUTUBE_PLAYLIST_ID = 'PLJpx00qiABt1FSmOul4Oo4LmmB6FXJBbd';
+
 export async function accueil() {
     console.log("Chargement accueil...");
-
-    // Simulation d'appel API (à remplacer par de vrais appels plus tard)
-    // const sermon = await api.get('/sermons/latest');
-    // const events = await api.get('/events/upcoming');
-    // const news = await api.get('/news/latest');
-
-    // MOCK DATA pour l'instant
-    const sermon = {
-        title: "Message du dimanche",
-        videoUrl: "#/elrtv",
-        image: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=800&q=80"
-    };
 
     // Récupération des données API
     let homeGroups = [];
     let nextEvents = [];
+    let youtubeVideos = [];
+    let currentVideoId = null;
+    let articles = [];
 
     try {
-        const [homeGroupsResponse, eventsResponse] = await Promise.all([
+        const [homeGroupsResponse, eventsResponse, playlistResponse, articlesResponse] = await Promise.all([
             api.getHomeGroups(),
-            api.getUpcomingEvents(5) // Récupérer les 5 prochains événements
+            api.getUpcomingEvents(5),
+            api.getYoutubePlaylistItems(YOUTUBE_PLAYLIST_ID).catch(() => null),
+            api.getArticles(null, 3).catch(() => null)
         ]);
+
+        // YouTube videos
+        if (playlistResponse && playlistResponse.items) {
+            youtubeVideos = playlistResponse.items.map(item => ({
+                videoId: item.contentDetails.videoId,
+                title: item.snippet.title,
+                thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
+                publishedAt: item.snippet.publishedAt
+            }));
+            if (youtubeVideos.length > 0) {
+                currentVideoId = youtubeVideos[0].videoId;
+            }
+        }
 
         if (homeGroupsResponse && homeGroupsResponse.home_groups) {
             homeGroups = homeGroupsResponse.home_groups.slice(0, 9);
@@ -53,6 +61,11 @@ export async function accueil() {
                 };
             });
         }
+
+        // Articles
+        if (articlesResponse && articlesResponse.articles) {
+            articles = articlesResponse.articles;
+        }
     } catch (error) {
         console.error("Erreur chargement données accueil:", error);
     }
@@ -69,15 +82,63 @@ export async function accueil() {
 
     // Construction HTML dynamique des événements
     const eventsHtml = nextEvents.map(event => `
-        <article class="rounded-2xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition flex">
-            <div class="w-2 ${event.color} flex-shrink-0"></div>
-            <div class="p-5 flex-1">
+        <article class="rounded-3xl overflow-hidden bg-paper shadow-soft border border-black/5">
+            <div class="h-2 ${event.color}"></div>
+            <div class="p-6">
                 <p class="text-xs font-black tracking-widest text-black/50 uppercase">${event.date}</p>
-                <h3 class="mt-1 text-lg font-black">${event.title}</h3>
-                <p class="mt-1 text-black/70 text-sm line-clamp-2">${event.description}</p>
+                <h3 class="mt-2 text-xl font-black">${event.title}</h3>
+                <p class="mt-2 text-black/70 text-sm line-clamp-2">${event.description}</p>
+                ${event.location ? `<p class="mt-2 text-black/50 text-xs"><span class="font-bold">Lieu:</span> ${event.location}</p>` : ''}
+                <div class="mt-5">
+                    <a class="inline-flex rounded-full px-5 py-2.5 font-bold bg-ink text-paper hover:opacity-90" href="#/actu">
+                        Détails
+                    </a>
+                </div>
             </div>
         </article>
     `).join('');
+
+    // Construction HTML dynamique des articles
+    const categoryColors = {
+        'témoignage': 'text-punch',
+        'annonce': 'text-glow',
+        'rétrospective': 'text-ink/60',
+        'default': 'text-punch'
+    };
+
+    const articlesHtml = articles.length > 0
+        ? articles.map(article => {
+            const categoryClass = categoryColors[article.category?.toLowerCase()] || categoryColors['default'];
+            const imageUrl = article.image || `https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=600&q=80`;
+
+            return `
+            <article class="rounded-3xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition">
+                <div class="aspect-[16/10] overflow-hidden">
+                    <img src="${imageUrl}" alt="${article.title}" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                </div>
+                <div class="p-6">
+                    <p class="text-xs font-bold ${categoryClass} uppercase">${article.category || 'Article'}</p>
+                    <h3 class="mt-2 text-lg font-black">${article.title}</h3>
+                    <p class="mt-2 text-black/60 text-sm line-clamp-2">${article.excerpt || ''}</p>
+                    <a href="#/article?slug=${article.slug}" class="mt-4 inline-flex text-sm font-bold text-punch hover:underline">
+                        Lire la suite →
+                    </a>
+                </div>
+            </article>
+        `}).join('')
+        : `
+            <article class="rounded-3xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition">
+                <div class="aspect-[16/10] bg-gradient-to-br from-punch/20 to-glow/10"></div>
+                <div class="p-6">
+                    <p class="text-xs font-bold text-punch uppercase">À venir</p>
+                    <h3 class="mt-2 text-lg font-black">Restez connectés</h3>
+                    <p class="mt-2 text-black/60 text-sm line-clamp-2">De nouvelles actualités arrivent bientôt...</p>
+                    <a href="#/actu" class="mt-4 inline-flex text-sm font-bold text-punch hover:underline">
+                        Voir toutes les actus →
+                    </a>
+                </div>
+            </article>
+        `.repeat(3);
 
     // Construction HTML dynamique des groupes de maison
     const homeGroupsHtml = `
@@ -168,71 +229,77 @@ export async function accueil() {
                 </a>
             </div>
 
-            <div class="mt-8 grid gap-6 md:grid-cols-5">
-                <div class="md:col-span-3 rounded-3xl overflow-hidden shadow-soft border border-black/5 bg-ink">
-                    <div class="aspect-video relative group cursor-pointer">
-                         <img src="${sermon.image}" class="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition" />
-                         <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="h-16 w-16 bg-paper rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition">
-                                <div class="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-ink border-b-[10px] border-b-transparent ml-1"></div>
-                            </div>
-                         </div>
+            <div class="mt-8 grid gap-6 lg:grid-cols-5">
+                <!-- Lecteur YouTube -->
+                <div class="lg:col-span-3 rounded-3xl overflow-hidden shadow-soft border border-black/5 bg-ink">
+                    <div class="aspect-video relative bg-black">
+                        <iframe
+                            id="youtube-player"
+                            class="w-full h-full"
+                            src="https://www.youtube.com/embed/${currentVideoId || 'dQw4w9WgXcQ'}?rel=0"
+                            title="Sermon vidéo"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
                     </div>
                     <div class="p-6 text-paper">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="inline-flex items-center rounded-full bg-paper/10 px-3 py-1 text-xs font-bold">SERMON</span>
                         </div>
-                        <h3 class="mt-3 text-2xl font-black tracking-tight">${sermon.title}</h3>
-                        <div class="mt-6 flex flex-col sm:flex-row gap-3">
-                            <a class="inline-flex justify-center rounded-full px-6 py-3 font-black bg-paper text-ink hover:opacity-90" href="${sermon.videoUrl}">
-                                Regarder maintenant
-                            </a>
-                        </div>
+                        <h3 id="current-video-title" class="mt-3 text-xl font-black tracking-tight line-clamp-2">
+                            ${youtubeVideos.length > 0 ? youtubeVideos[0].title : 'Chargement...'}
+                        </h3>
                     </div>
                 </div>
 
-                <aside class="md:col-span-2 rounded-3xl p-6 bg-haze border border-black/5 shadow-soft">
-                    <p class="text-xs font-extrabold tracking-widest text-black/50 uppercase">Horaires</p>
-                    <h4 class="mt-2 text-lg font-black">Nos célébrations</h4>
-                    <ul class="mt-3 space-y-2 text-sm text-black/70">
-                        <li>• Dimanche 10h00 - Culte principal</li>
-                        <li>• Mercredi 19h30 - Prière</li>
-                        <li>• Samedi 18h00 - Jeunesse</li>
-                    </ul>
+                <!-- Playlist -->
+                <aside class="lg:col-span-2 rounded-3xl p-4 bg-haze border border-black/5 shadow-soft max-h-[500px] overflow-hidden flex flex-col">
+                    <p class="text-xs font-extrabold tracking-widest text-black/50 uppercase px-2">Playlist</p>
+                    <h4 class="mt-1 text-lg font-black px-2">Sermons récents</h4>
+                    <div class="mt-3 space-y-2 overflow-y-auto flex-1 pr-1">
+                        ${youtubeVideos.length > 0 ? youtubeVideos.map((video, index) => `
+                            <button
+                                data-video-id="${video.videoId}"
+                                data-video-title="${video.title.replace(/"/g, '&quot;')}"
+                                class="youtube-video-btn w-full flex gap-3 p-2 rounded-xl hover:bg-black/5 transition text-left ${index === 0 ? 'bg-black/10' : ''}">
+                                <img src="${video.thumbnail}" alt="" class="w-24 h-14 object-cover rounded-lg flex-shrink-0" />
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-bold line-clamp-2 text-black/80">${video.title}</p>
+                                </div>
+                            </button>
+                        `).join('') : '<p class="text-sm text-black/50 px-2">Aucune vidéo disponible</p>'}
+                    </div>
                 </aside>
             </div>
         </section>
 
         <!-- PROCHAINS ÉVÉNEMENTS -->
-        <section class="bg-haze border-y border-black/5">
-            <div class="mx-auto max-w-[95%] px-4 py-12 md:py-16">
-                <div class="flex items-end justify-between gap-6">
-                    <div>
-                        <p class="text-xs font-extrabold tracking-widest text-black/50 uppercase">Événements</p>
-                        <h2 class="mt-2 text-2xl md:text-3xl font-black">Prochains événements</h2>
-                        <p class="mt-2 text-black/70">Rejoignez-nous lors de nos prochains rassemblements</p>
-                    </div>
+    <section id="events" class="bg-haze border-y border-black/5">
+        <div class="mx-auto max-w-6xl px-4 py-12 md:py-16">
+            <div class="flex items-end justify-between gap-6">
+                <div>
+                    <p class="text-xs font-extrabold tracking-widest text-black/50 uppercase">The latest</p>
+                    <h2 class="mt-2 text-2xl md:text-3xl font-black">Événements à venir</h2>
+                    <p class="mt-2 text-black/70">Rejoins-nous en présentiel ou en ligne.</p>
                 </div>
 
-                <div class="mt-8 grid gap-6 md:grid-cols-2">
-                    <!-- Image à gauche -->
-                    <div class="rounded-3xl overflow-hidden shadow-soft border border-black/5">
-                        <img src="https://images.unsplash.com/photo-1519491050282-cf00c82424bd?auto=format&fit=crop&w=800&q=80" 
-                             alt="Événements de l'église" 
-                             class="h-full w-full object-cover min-h-[300px] md:min-h-full" />
-                    </div>
-
-                    <!-- 3 événements à droite (verticaux) -->
-                    <div class="flex flex-col gap-4">
-                        ${eventsHtml}
-
-                        <a href="#/actu" class="mt-2 inline-flex justify-center rounded-full px-5 py-3 font-bold bg-ink text-paper hover:opacity-90">
-                            Voir tous les événements
-                        </a>
-                    </div>
-                </div>
+                <a class="hidden md:inline-flex rounded-full px-5 py-2 font-bold bg-ink text-paper hover:opacity-90" href="#/actu">
+                    Explorer tous les events
+                </a>
             </div>
-        </section>
+
+            <div class="mt-8 grid gap-6 md:grid-cols-3">
+                ${eventsHtml}
+            </div>
+
+            <div class="mt-8 md:hidden">
+                <a class="inline-flex w-full justify-center rounded-full px-5 py-3 font-bold bg-ink text-paper hover:opacity-90" href="#/actu">
+                    Explorer tous les events
+                </a>
+            </div>
+        </div>
+    </section>
 
         <!-- ACTUALITÉS -->
         <section id="actu-section" class="mx-auto max-w-[95%] px-4 py-12 md:py-16">
@@ -248,41 +315,7 @@ export async function accueil() {
             </div>
 
             <div class="mt-8 grid gap-6 md:grid-cols-3">
-                <article class="rounded-3xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition">
-                    <div class="aspect-[16/10] bg-[linear-gradient(135deg,rgba(124,58,237,.15),rgba(163,255,18,.10))]"></div>
-                    <div class="p-6">
-                        <p class="text-xs font-bold text-punch uppercase">Témoignage</p>
-                        <h3 class="mt-2 text-lg font-black">Une vie transformée</h3>
-                        <p class="mt-2 text-black/60 text-sm line-clamp-2">Découvrez le témoignage inspirant de Marie qui a rencontré Jésus...</p>
-                        <a href="#/actu" class="mt-4 inline-flex text-sm font-bold text-punch hover:underline">
-                            Lire la suite →
-                        </a>
-                    </div>
-                </article>
-
-                <article class="rounded-3xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition">
-                    <div class="aspect-[16/10] bg-[linear-gradient(135deg,rgba(163,255,18,.15),rgba(124,58,237,.10))]"></div>
-                    <div class="p-6">
-                        <p class="text-xs font-bold text-glow uppercase">Annonce</p>
-                        <h3 class="mt-2 text-lg font-black">Nouveau groupe de maison</h3>
-                        <p class="mt-2 text-black/60 text-sm line-clamp-2">Un nouveau groupe démarre dans le quartier Nord...</p>
-                        <a href="#/actu" class="mt-4 inline-flex text-sm font-bold text-punch hover:underline">
-                            Lire la suite →
-                        </a>
-                    </div>
-                </article>
-
-                <article class="rounded-3xl overflow-hidden bg-paper shadow-soft border border-black/5 hover:shadow-lg transition">
-                    <div class="aspect-[16/10] bg-[linear-gradient(135deg,rgba(124,58,237,.12),rgba(rgba(0,0,0,.05))]"></div>
-                    <div class="p-6">
-                        <p class="text-xs font-bold text-ink/60 uppercase">Rétrospective</p>
-                        <h3 class="mt-2 text-lg font-black">Le bilan de janvier</h3>
-                        <p class="mt-2 text-black/60 text-sm line-clamp-2">Retour sur les moments forts du mois écoulé...</p>
-                        <a href="#/actu" class="mt-4 inline-flex text-sm font-bold text-punch hover:underline">
-                            Lire la suite →
-                        </a>
-                    </div>
-                </article>
+                ${articlesHtml}
             </div>
 
             <div class="mt-8 md:hidden">
@@ -334,5 +367,35 @@ export async function accueil() {
                 </div>
             </div>
         </section>
+
+        <!-- Script pour la playlist YouTube -->
+        <script>
+            setTimeout(() => {
+                const videoButtons = document.querySelectorAll('.youtube-video-btn');
+                const player = document.getElementById('youtube-player');
+                const titleEl = document.getElementById('current-video-title');
+
+                videoButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const videoId = btn.dataset.videoId;
+                        const videoTitle = btn.dataset.videoTitle;
+
+                        // Update player
+                        if (player) {
+                            player.src = 'https://www.youtube.com/embed/' + videoId + '?rel=0&autoplay=1';
+                        }
+
+                        // Update title
+                        if (titleEl) {
+                            titleEl.textContent = videoTitle;
+                        }
+
+                        // Update active state
+                        videoButtons.forEach(b => b.classList.remove('bg-black/10'));
+                        btn.classList.add('bg-black/10');
+                    });
+                });
+            }, 100);
+        </script>
     `;
 }

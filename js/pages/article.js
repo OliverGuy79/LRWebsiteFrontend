@@ -1,20 +1,21 @@
 import { api } from '../services/api.service.js';
 
 export async function article() {
-  // 1. Récupérer l'ID depuis l'URL (ex: #/article?id=123)
+  // Récupérer le slug ou l'ID depuis l'URL (ex: #/article?slug=mon-article ou #/article?id=123)
   const params = new URLSearchParams(window.location.hash.split('?')[1]);
+  const articleSlug = params.get('slug');
   const articleId = params.get('id');
 
   let article = null;
   let loading = true;
   let error = null;
 
-  if (articleId) {
+  const identifier = articleSlug || articleId;
+
+  if (identifier) {
     try {
-      // On essaie de récupérer l'article par son ID
-      // Si l'API attend un slug mais qu'on a un ID, on peut devoir adapter si nécessaire.
-      // Pour l'instant on suppose que l'endpoint accepte l'ID.
-      article = await api.getArticle(articleId);
+      // Récupérer l'article par son slug ou ID
+      article = await api.getArticle(identifier);
 
       // Si l'API retourne un tableau (filtre), on prend le premier
       if (Array.isArray(article)) {
@@ -55,8 +56,9 @@ export async function article() {
   const date = new Date(article.published_at || article.created_at || Date.now()).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const image = article.image || 'https://images.unsplash.com/photo-1493612276216-9c782cb70dad?auto=format&fit=crop&q=80&w=1000';
 
-  // Contenu : on utilise content ou une description si content est vide
-  const contentHtml = article.content ? article.content.replace(/\n/g, '<br>') : '<p>Contenu non disponible.</p>';
+  // Préparer le contenu HTML en échappant les backticks
+  const rawContent = article.content_html || article.content || '<p>Contenu non disponible.</p>';
+  const safeContent = rawContent.replace(/`/g, '\\`').replace(/\$/g, '\\$');
 
   return `
     <div class="bg-paper text-ink font-sans">
@@ -142,8 +144,8 @@ export async function article() {
         <section class="mt-12 grid gap-10 lg:grid-cols-12">
           <!-- Article body -->
           <article class="lg:col-span-8">
-            <div class="prose prose-lg max-w-none text-lg leading-relaxed text-black/80 font-serif">
-               ${contentHtml}
+            <div id="article-content" class="prose prose-lg max-w-none text-lg leading-relaxed text-black/80 font-serif">
+               ${safeContent}
             </div>
 
             <!-- Tags + Share -->
@@ -159,10 +161,10 @@ export async function article() {
 
               <div class="mt-6 flex flex-col sm:flex-row gap-3">
                 <button onclick="navigator.share({title: '${article.title}', url: window.location.href})" class="inline-flex justify-center rounded-full px-6 py-3 font-bold bg-ink text-paper hover:opacity-90 transition-opacity">
-                  Partager l’article
+                  Partager l'article
                 </button>
                 <a href="#/actu" class="inline-flex justify-center rounded-full px-6 py-3 font-bold border border-rule hover:border-black/30 transition-colors">
-                  Lire plus d’essais
+                  Lire plus d'essais
                 </a>
               </div>
             </div>
@@ -171,14 +173,14 @@ export async function article() {
           <!-- Right rail -->
           <aside class="lg:col-span-4 hidden lg:block">
             <div class="sticky top-24 space-y-6">
-              
+
               <!-- Promo box -->
               <div class="rounded-2xl border border-rule p-6 bg-paper shadow-soft">
                 <div class="text-xs font-black tracking-widest uppercase text-black/60">
                   Dossier spécial
                 </div>
                 <div class="mt-2 font-black text-xl font-serif leading-snug">
-                  “Web & Foi” : quand le design sert un message
+                  "Web & Foi" : quand le design sert un message
                 </div>
                 <p class="mt-2 text-sm text-black/70">
                   Découvrir comment L'Église La Rencontre utilise le digital.
