@@ -4,33 +4,267 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Église La Rencontre</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+                        serif: ['Spectral', 'ui-serif', 'Georgia']
+                    },
+                    colors: {
+                        ink: '#0b0b0f',
+                        paper: '#ffffff',
+                        haze: '#f5f6fa',
+                        punch: '#7c3aed',
+                        glow: '#a3ff12',
+                        rule: 'rgba(11,11,15,.12)',
+                    },
+                    boxShadow: {
+                        soft: '0 12px 30px rgba(0,0,0,.12)'
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <!-- index.html - Structure unique -->
 
-<body>
-    <nav>
-        <ul>
-            <li><a href="#/">Accueil</a></li>
-            <li><a href="#/actu">Actu</a></li>
-            <li><a href="#/eglise">Église</a></li>
-            <li><a href="#/elrtv">ÉLR TV</a></li>
-            <li><a href="#/nextgen">Next Gen</a></li>
-            <li><a href="#/boutique">Boutique</a></li>
-            <li><a href="#/contact">Contact</a></li>
-        </ul>
-    </nav>
+<body class="bg-paper text-ink font-sans">
+    <!-- Top bar -->
+    <header class="sticky top-0 z-50 bg-paper/85 backdrop-blur border-b border-black/5">
+        <div class="mx-auto max-w-[95%] px-4">
+            <div class="flex h-16 items-center justify-between">
+                <a href="#/" class="flex items-center">
+                    <img src="/assets/images/lr-logo-vertical-black.png" alt="Église La Rencontre" class="h-10">
+                </a>
+
+                <!-- Navigation Desktop -->
+                <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
+                    <a class="hover:text-punch" href="#/">Accueil</a>
+                    <a class="hover:text-punch" href="#/actu">Actu</a>
+
+                    <!-- Dropdown Église -->
+                    <div class="group relative cursor-pointer">
+                        <span class="hover:text-punch flex items-center gap-1">
+                            Église
+                            <svg class="h-4 w-4 transition duration-200 group-hover:rotate-180" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        <div class="absolute left-0 top-full hidden w-56 pt-2 group-hover:block hover:block z-50">
+                            <div class="rounded-xl border border-black/5 bg-paper p-2 shadow-soft flex flex-col gap-1">
+                                <a href="#/vision"
+                                    class="rounded-lg px-4 py-2 hover:bg-black/5 hover:text-punch transition">Notre
+                                    vision</a>
+                                <a href="#/pastoral-team"
+                                    class="rounded-lg px-4 py-2 hover:bg-black/5 hover:text-punch transition">Équipe
+                                    pastorale</a>
+                                <a href="#/home-groups"
+                                    class="rounded-lg px-4 py-2 hover:bg-black/5 hover:text-punch transition">Les
+                                    Home Groups</a>
+                                <a href="#/services"
+                                    class="rounded-lg px-4 py-2 hover:bg-black/5 hover:text-punch transition">Services</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="hover:text-punch" href="#/elrtv">ELR TV</a>
+                    <!-- Dropdown Next Gen -->
+                    <div class="group relative cursor-pointer">
+                        <span class="hover:text-punch flex items-center gap-1">
+                            Next Gen
+                            <svg class="h-4 w-4 transition duration-200 group-hover:rotate-180" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        <div class="absolute left-0 top-full hidden w-48 pt-2 group-hover:block hover:block z-50">
+                            <div class="rounded-xl border border-black/5 bg-paper p-2 shadow-soft flex flex-col gap-1">
+                                <a href="#/kidz"
+                                    class="rounded-lg px-4 py-2 hover:bg-black/5 hover:text-punch transition">Kidz</a>
+                                <a href="#/teenz"
+                                    class="rounded-lg px-4 py-2 hover:bg-black/5 hover:text-punch transition">Teenz</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="hover:text-punch" href="#/boutique">Boutique</a>
+                    <a class="hover:text-punch" href="#/contact">Contact</a>
+                </nav>
+
+                <!-- Actions Desktop -->
+                <div class="hidden md:flex items-center gap-2">
+                    <a href="https://www.helloasso.com/associations/l-eglise-la-rencontre/formulaires/2" target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex rounded-full px-4 py-2 text-sm font-bold bg-ink text-paper hover:opacity-90">
+                        Faire un don
+                    </a>
+                </div>
+
+                <!-- Bouton Burger Mobile -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-ink">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        </div>
+        </div>
+    </header>
+
+    <!-- Menu Mobile Overlay -->
+    <div id="mobile-menu"
+        class="fixed inset-0 w-screen h-screen z-[100] bg-white text-ink transform translate-x-full transition-transform duration-300 md:hidden flex flex-col">
+        <div class="flex items-center justify-between p-6 border-b border-black/5">
+            <span class="font-black text-2xl uppercase tracking-tighter italic">Menu</span>
+            <button id="close-menu-btn" class="p-2 text-ink">
+                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto p-8 flex flex-col gap-8 text-2xl font-black uppercase tracking-tight">
+            <a class="mobile-link hover:text-punch" href="#/">Accueil</a>
+            <a class="mobile-link hover:text-punch" href="#/actu">Actu</a>
+
+            <!-- Sous-menu Mobile Église -->
+            <div class="flex flex-col gap-4">
+                <div id="mobile-eglise-toggle" class="flex items-center justify-between cursor-pointer">
+                    <span>Église</span>
+                    <svg id="mobile-eglise-arrow" class="h-6 w-6 opacity-50 transition-transform duration-200"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div id="mobile-eglise-submenu"
+                    class="hidden flex flex-col gap-4 pl-6 text-lg font-bold text-black/60 border-l-4 border-punch/20 transition-all duration-300">
+                    <a class="mobile-link hover:text-punch" href="#/vision">Notre vision</a>
+                    <a class="mobile-link hover:text-punch" href="#/pastoral-team">Équipe pastorale</a>
+                    <a class="mobile-link hover:text-punch" href="#/home-groups">Les Home Groups</a>
+                    <a class="mobile-link hover:text-punch" href="#/services">Services</a>
+                </div>
+            </div>
+
+            <a class="mobile-link hover:text-punch" href="#/elrtv">ELR TV</a>
+            <!-- Sous-menu Mobile Next Gen -->
+            <div class="flex flex-col gap-4">
+                <div id="mobile-nextgen-toggle" class="flex items-center justify-between cursor-pointer">
+                    <span>Next Gen</span>
+                    <svg id="mobile-nextgen-arrow" class="h-6 w-6 opacity-50 transition-transform duration-200"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div id="mobile-nextgen-submenu"
+                    class="hidden flex flex-col gap-4 pl-6 text-lg font-bold text-black/60 border-l-4 border-punch/20 transition-all duration-300">
+                    <a class="mobile-link hover:text-punch" href="#/nextgen#kidz">Kidz</a>
+                    <a class="mobile-link hover:text-punch" href="#/nextgen#teenz">Teenz</a>
+                </div>
+            </div>
+            <a class="mobile-link hover:text-punch" href="#/boutique">Boutique</a>
+            <a class="mobile-link hover:text-punch" href="#/contact">Contact</a>
+
+            <a class="mobile-link inline-flex justify-center rounded-full px-8 py-4 bg-ink text-white hover:opacity-90 mt-8 text-lg font-black"
+                href="https://www.helloasso.com/associations/l-eglise-la-rencontre" target="_blank"
+                rel="noopener noreferrer">Faire un don</a>
+        </nav>
+    </div>
+
+    <script>
+        // Logique du menu mobile
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        const mobileEgliseToggle = document.getElementById('mobile-eglise-toggle');
+        const mobileEgliseSubmenu = document.getElementById('mobile-eglise-submenu');
+        const mobileEgliseArrow = document.getElementById('mobile-eglise-arrow');
+        const mobileNextgenToggle = document.getElementById('mobile-nextgen-toggle');
+        const mobileNextgenSubmenu = document.getElementById('mobile-nextgen-submenu');
+        const mobileNextgenArrow = document.getElementById('mobile-nextgen-arrow');
+
+        function toggleMenu() {
+            mobileMenu.classList.toggle('translate-x-full');
+            if (!mobileMenu.classList.contains('translate-x-full')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function toggleSubmenu(submenu, arrow) {
+            const isHidden = submenu.classList.contains('hidden');
+            if (isHidden) {
+                submenu.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                submenu.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMenu);
+        closeMenuBtn.addEventListener('click', toggleMenu);
+
+        if (mobileEgliseToggle) {
+            mobileEgliseToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSubmenu(mobileEgliseSubmenu, mobileEgliseArrow);
+            });
+        }
+
+        if (mobileNextgenToggle) {
+            mobileNextgenToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSubmenu(mobileNextgenSubmenu, mobileNextgenArrow);
+            });
+        }
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (!mobileMenu.classList.contains('translate-x-full')) {
+                    toggleMenu();
+                }
+            });
+        });
+    </script>
 
     <!-- Player persistant (jamais détruit) -->
-    <div id="player-container">
-        <audio id="audio-player"></audio>
-        <video id="video-player"></video>
+    <div id="player-container" class="fixed bottom-0 left-0 right-0 bg-ink p-4 z-[1000] hidden">
+        <div class="max-w-4xl mx-auto">
+            <audio id="audio-player" class="w-full"></audio>
+            <video id="video-player" class="w-full max-h-[300px]"></video>
+        </div>
     </div>
 
     <!-- Contenu dynamique (change selon la route) -->
     <main id="content">
         <!-- Chargé dynamiquement -->
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-paper border-t border-black/5">
+        <div class="mx-auto max-w-[95%] px-4 py-10">
+            <div class="flex flex-col md:flex-row gap-6 md:items-center md:justify-between">
+                <div class="text-sm text-black/60">© 2026 — Église La Rencontre. Tous droits réservés.</div>
+                <div class="flex gap-4 text-sm font-semibold">
+                    <a class="hover:text-punch" href="#/eglise">Mentions</a>
+                    <a class="hover:text-punch" href="#/contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script type="module" src="/js/router.js"></script>
 </body>
