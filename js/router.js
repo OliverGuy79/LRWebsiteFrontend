@@ -19,6 +19,7 @@ import { equipe } from './pages/equipe.js';
 import { homeGroups } from './pages/home-groups.js';
 import { services } from './pages/services.js';
 import { boutique } from './pages/boutique.js';
+import { tAll } from './services/site-content.service.js';
 
 // Conteneur principal
 const contentElement = document.getElementById('content');
@@ -75,7 +76,8 @@ const routes = {
         await loadPage('accueil');
         // Un petit délai supplémentaire pour laisser le temps au navigateur de rendre le DOM
         setTimeout(() => {
-            const section = document.getElementById('actu-section');
+            const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+            const section = document.getElementById(params.has('category') ? 'events' : 'actu-section');
             if (section) section.scrollIntoView({ behavior: 'smooth' });
         }, 50);
     },
@@ -99,6 +101,29 @@ window.addEventListener('DOMContentLoaded', () => {
     const hash = window.location.hash.slice(1) || '/';
     const path = hash.split('?')[0];
     routes[path]?.();
+    tAll({
+        'nav.home': 'Accueil',
+        'nav.news': 'Actu',
+        'nav.church': 'Église',
+        'nav.vision': 'Notre vision',
+        'nav.team': 'Équipe pastorale',
+        'nav.groups': 'Les Home Groups',
+        'nav.connect': 'LR Connect',
+        'nav.tv': 'ELR TV',
+        'nav.nextgen': 'Next Gen',
+        'nav.kidz': 'Kidz',
+        'nav.teenz': 'Teenz',
+        'nav.shop': 'Boutique',
+        'nav.contact': 'Contact',
+        'nav.donate': 'Faire un don',
+        'footer.description': 'Une église où chacun peut rencontrer Dieu, trouver sa place et vivre transformé.',
+        'footer.copyright': '© 2026 — Église La Rencontre. Tous droits réservés.',
+    }).then(content => {
+        document.querySelectorAll('[data-site-key]').forEach(element => {
+            const value = content[element.dataset.siteKey];
+            if (value) element.textContent = value;
+        });
+    });
 });
 
 // Permet de charger des pages sans recharger la page

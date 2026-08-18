@@ -60,6 +60,40 @@ export class ApiService {
         }
     }
 
+    /** Envoyer des données JSON au backend. */
+    async post(endpoint, data = {}) {
+        const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+        const url = this.baseUrl && this.baseUrl.startsWith('http')
+            ? new URL(`${this.baseUrl}${cleanEndpoint}`)
+            : new URL(cleanEndpoint, window.location.origin + (this.baseUrl || ''));
+
+        try {
+            const response = await fetch(url.toString(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                let message = `Erreur API (${response.status})`;
+                try {
+                    const errorData = await response.json();
+                    if (errorData.detail) message = typeof errorData.detail === 'string'
+                        ? errorData.detail
+                        : 'Les informations envoyées ne sont pas valides.';
+                } catch (_) {
+                    // La réponse d'erreur n'est pas au format JSON.
+                }
+                throw new Error(message);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`API POST Error for ${endpoint}:`, error);
+            throw error;
+        }
+    }
+
     // --- ARTICLES (BLOG/ACTUALITÉS) ---
     async getArticles(category = null, limit = null, preview = false, tag = null) {
         return this.get('/api/articles', { category, limit, preview, tag });
@@ -106,11 +140,6 @@ export class ApiService {
         return this.get('/api/pastoral-team', { role, preview });
     }
 
-    // --- CULTES / SERVICES ---
-    async getServices(lang = null, serviceType = null, preview = false) {
-        return this.get('/api/services', { lang, service_type: serviceType, preview });
-    }
-
     // --- VISION ---
     async getVision(preview = false) {
         return this.get('/api/vision', { preview });
@@ -130,7 +159,7 @@ export class ApiService {
         if (!this.youtubeApiKey) throw new Error("Clé d'API YouTube manquante.");
 
         const url = new URL(`${this.youtubeBaseUrl}/playlists`);
-        url.searchParams.append('part', 'snippet,contentDetails');
+        url.searchParams.append('part', 'snippet,contentDetails,status');
         url.searchParams.append('channelId', channelId);
         url.searchParams.append('maxResults', '10');
         url.searchParams.append('key', this.youtubeApiKey);
@@ -148,7 +177,7 @@ export class ApiService {
         if (!this.youtubeApiKey) throw new Error("Clé d'API YouTube manquante.");
 
         const url = new URL(`${this.youtubeBaseUrl}/playlistItems`);
-        url.searchParams.append('part', 'snippet,contentDetails');
+        url.searchParams.append('part', 'snippet,contentDetails,status');
         url.searchParams.append('playlistId', playlistId);
         url.searchParams.append('maxResults', '10');
         url.searchParams.append('key', this.youtubeApiKey);

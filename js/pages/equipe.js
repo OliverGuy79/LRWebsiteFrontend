@@ -1,130 +1,110 @@
 import { api } from '../services/api.service.js';
+import { tAll } from '../services/site-content.service.js';
 
 export async function equipe() {
     let team = [];
-    let loading = true;
-    let error = null;
+
+    const c = await tAll({
+        'equipe.title': 'Notre Équipe',
+        'equipe.subtitle': 'Des hommes et des femmes passionnés pour servir Dieu et son Église.',
+        'equipe.kicker': 'Les personnes derrière la vision',
+        'equipe.empty': 'L’équipe sera bientôt présentée ici.',
+        'equipe.cta.kicker': 'Servir ensemble',
+        'equipe.cta.title': 'Il y a une place pour toi.',
+        'equipe.cta.button': 'Nous contacter',
+    });
+    const titleWords = c['equipe.title'].trim().split(/\s+/);
+    const titleAccent = titleWords.pop() || '';
 
     try {
         const response = await api.getTeamMembers();
-        if (response && Array.isArray(response.team)) {
-            team = response.team;
-        } else if (Array.isArray(response)) {
-            team = response;
-        }
-
-        // Filtrer les brouillons si nécessaire (l'API le fait peut-être déjà, mais sécu)
-        team = team.filter(m => m.status === 'published');
-
-        // Trier par display_order
-        team.sort((a, b) => (parseInt(a.display_order) || 99) - (parseInt(b.display_order) || 99));
-
-    } catch (err) {
-        console.error("Erreur chargement équipe:", err);
-        error = "Impossible de charger l'équipe.";
+        team = Array.isArray(response) ? response : (response?.team || []);
+        team = team
+            .filter(member => !member.status || member.status === 'published')
+            .sort((a, b) => (Number(a.display_order) || 99) - (Number(b.display_order) || 99));
+    } catch (error) {
+        console.error('Erreur chargement équipe :', error);
     }
 
-    loading = false;
-
-    if (loading) {
-        return `
-        <div class="min-h-screen bg-paper flex items-center justify-center">
-            <div class="text-center animate-pulse">
-                <div class="text-xl font-serif text-black/60">Chargement de l'équipe...</div>
-            </div>
-        </div>`;
-    }
-
-    if (error) {
-        return `
-        <div class="min-h-screen bg-paper flex flex-col items-center justify-center p-4">
-            <h1 class="text-3xl font-black text-punch mb-4">Oups !</h1>
-            <p class="text-lg text-black/70 mb-8">${error}</p>
-            <a href="#/" class="rounded-full px-6 py-3 font-bold bg-ink text-paper hover:opacity-90 transition-opacity">
-                Retour à l'accueil
-            </a>
-        </div>`;
-    }
-
-    // Séparer le pasteur principal des autres
-    // Note: is_senior_pastor peut être une string "TRUE" ou un booléen selon l'API
-    const seniorPastor = team.find(m => String(m.is_senior_pastor).toUpperCase() === 'TRUE' || m.is_senior_pastor === true);
-    const otherMembers = team.filter(m => m !== seniorPastor);
-
-    // Fonction helper pour les liens sociaux
     const renderSocials = (member) => {
-        let html = '';
-        if (member.facebook) html += `<a href="${member.facebook}" target="_blank" class="text-black/40 hover:text-punch transition"><i class="fab fa-facebook"></i> FB</a>`;
-        if (member.twitter) html += `<a href="${member.twitter}" target="_blank" class="text-black/40 hover:text-punch transition"><i class="fab fa-twitter"></i> X</a>`;
-        if (member.instagram) html += `<a href="${member.instagram}" target="_blank" class="text-black/40 hover:text-punch transition"><i class="fab fa-instagram"></i> IG</a>`;
-        if (member.linkedin) html += `<a href="${member.linkedin}" target="_blank" class="text-black/40 hover:text-punch transition"><i class="fab fa-linkedin"></i> IN</a>`;
-        if (member.email) html += `<a href="mailto:${member.email}" class="text-black/40 hover:text-punch transition"><i class="fas fa-envelope"></i> Email</a>`;
-        return html ? `<div class="flex gap-3 text-xs font-bold mt-4">${html}</div>` : '';
+        const links = [
+            member.instagram && `<a href="${member.instagram}" target="_blank" rel="noopener noreferrer">Instagram</a>`,
+            member.facebook && `<a href="${member.facebook}" target="_blank" rel="noopener noreferrer">Facebook</a>`,
+            member.linkedin && `<a href="${member.linkedin}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`,
+            member.email && `<a href="mailto:${member.email}">Email</a>`,
+        ].filter(Boolean);
+
+        return links.length ? `
+            <div class="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-widest text-black/40">
+                ${links.join('')}
+            </div>
+        ` : '';
     };
 
-    // HTML du Senior Pastor
-    let seniorHtml = '';
-    if (seniorPastor) {
-        const image = seniorPastor.photo || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=1000';
-        seniorHtml = `
-        <section class="mb-20">
-            <div class="grid md:grid-cols-2 gap-8 items-center bg-white rounded-3xl p-8 border border-rule shadow-soft">
-                <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100">
-                    <img src="${image}" alt="${seniorPastor.first_name} ${seniorPastor.last_name}" class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <div class="text-xs font-black tracking-widest uppercase text-punch mb-2">${seniorPastor.role || seniorPastor.title || 'Pasteur Senior'}</div>
-                    <h2 class="text-4xl md:text-5xl font-black font-serif text-ink mb-6">
-                        ${seniorPastor.first_name} ${seniorPastor.last_name}
-                    </h2>
-                    <div class="prose text-black/70 text-lg leading-relaxed mb-6">
-                        ${seniorPastor.bio || 'Aucune biographie disponible.'}
-                    </div>
-                    ${renderSocials(seniorPastor)}
-                </div>
-            </div>
-        </section>
-        `;
-    }
+    const membersHtml = team.map((member, index) => {
+        const fullName = `${member.first_name || ''} ${member.last_name || ''}`.trim();
+        const image = member.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=111111&color=ffffff&size=900`;
 
-    // HTML des autres membres
-    const othersHtml = otherMembers.map(member => {
-        const image = member.photo || `https://ui-avatars.com/api/?name=${member.first_name}+${member.last_name}&background=random&size=512`;
         return `
-         <div class="group">
-            <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-gray-100 mb-4 border border-rule relative">
-                <img src="${image}" alt="${member.first_name}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                     <p class="text-white text-sm line-clamp-3">${member.bio || ''}</p>
+            <article class="group ${index % 3 === 1 ? 'md:translate-y-16' : ''}">
+                <div class="relative aspect-[4/5] overflow-hidden bg-black/5">
+                    <img src="${image}" alt="${fullName}"
+                         class="h-full w-full object-cover grayscale-[15%] transition duration-700 ease-out group-hover:scale-[1.025] group-hover:grayscale-0">
+                    ${member.bio ? `
+                        <div class="absolute inset-x-0 bottom-0 translate-y-full bg-ink/90 p-5 text-sm leading-relaxed text-white/80 backdrop-blur transition duration-500 group-hover:translate-y-0">
+                            ${member.bio}
+                        </div>
+                    ` : ''}
                 </div>
-            </div>
-            <div class="text-xl font-black font-serif text-ink">${member.first_name} ${member.last_name}</div>
-            <div class="text-sm font-bold text-black/50 uppercase tracking-widest mt-1">${member.role || member.title || 'Membre équipe'}</div>
-            ${renderSocials(member)}
-         </div>
-         `;
+                <div class="flex items-start justify-between gap-4 border-b border-black/20 py-5">
+                    <div>
+                        <h2 class="font-display text-2xl font-bold leading-none md:text-3xl">${fullName}</h2>
+                        <p class="mt-2 text-sm text-black/55">${member.role || member.title || 'Équipe pastorale'}</p>
+                        ${renderSocials(member)}
+                    </div>
+                    <span class="font-serif text-xl italic text-punch">${String(index + 1).padStart(2, '0')}</span>
+                </div>
+            </article>
+        `;
     }).join('');
 
     return `
-    <div class="bg-paper text-ink font-sans min-h-screen">
-        <!-- Header -->
-        <section class="pt-20 pb-12 px-4 text-center">
-            <h1 class="text-4xl md:text-6xl font-black mb-6 font-serif tracking-tight">Notre Équipe</h1>
-            <p class="text-xl text-black/60 max-w-2xl mx-auto italic font-serif">
-                Des hommes et des femmes passionnés pour servir Dieu et son Église.
-            </p>
-            <div class="mx-auto mt-8 h-1 w-24 bg-punch"></div>
-        </section>
-
-        <main class="mx-auto max-w-6xl px-4 pb-20">
-            ${seniorHtml}
-
-            ${otherMembers.length > 0 ? `
-                <div class="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-                    ${othersHtml}
+        <div class="min-h-screen overflow-hidden bg-[#f2efe8] text-ink">
+            <header class="mx-auto max-w-[1500px] px-5 pb-16 pt-20 md:px-10 md:pb-24 md:pt-28">
+                <p class="mb-6 text-xs font-black uppercase tracking-[0.28em] text-black/45">${c['equipe.kicker']}</p>
+                <div class="grid items-end gap-8 lg:grid-cols-12">
+                    <h1 class="font-display text-[19vw] font-extrabold leading-[0.72] tracking-[-0.08em] sm:text-[8rem] lg:col-span-8 lg:text-[10rem]">
+                        ${titleWords.join(' ')} <span class="font-serif font-medium italic text-punch">${titleAccent}</span>
+                    </h1>
+                    <p class="max-w-lg font-serif text-xl leading-relaxed text-black/60 md:text-2xl lg:col-span-4 lg:pb-2">
+                        ${c['equipe.subtitle']}
+                    </p>
                 </div>
-            ` : (!seniorPastor ? '<p class="text-center text-gray-500 italic">Aucun membre d\'équipe trouvé.</p>' : '')}
-        </main>
-    </div>
+            </header>
+
+            <main class="mx-auto max-w-[1500px] px-5 pb-28 md:px-10 md:pb-40">
+                ${team.length ? `
+                    <div class="grid gap-x-6 gap-y-16 sm:grid-cols-2 md:gap-x-8 md:gap-y-28 lg:grid-cols-3">
+                        ${membersHtml}
+                    </div>
+                ` : `
+                    <div class="border-y border-black/20 py-20 text-center">
+                        <p class="font-serif text-2xl italic text-black/50">${c['equipe.empty']}</p>
+                    </div>
+                `}
+            </main>
+
+            <section class="bg-ink px-5 py-20 text-white md:px-10 md:py-28">
+                <div class="mx-auto flex max-w-[1500px] flex-col items-start justify-between gap-10 md:flex-row md:items-end">
+                    <div>
+                        <p class="mb-5 text-xs font-black uppercase tracking-[0.28em] text-white/45">${c['equipe.cta.kicker']}</p>
+                        <h2 class="max-w-4xl font-display text-5xl font-extrabold leading-[0.9] md:text-8xl">
+                            ${c['equipe.cta.title']}
+                        </h2>
+                    </div>
+                    <a href="#/contact" class="shrink-0 rounded-full bg-glow px-8 py-4 font-black text-ink transition hover:scale-105">${c['equipe.cta.button']}</a>
+                </div>
+            </section>
+        </div>
     `;
 }

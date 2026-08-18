@@ -1,14 +1,96 @@
 // Page Contact - Style inspiré Transform Church
-export function contact() {
+import { tAll } from '../services/site-content.service.js';
+import { api } from '../services/api.service.js';
+
+export async function contact() {
+    const c = await tAll({
+        'contact.description': 'Nous sommes là pour vous. N\'hésitez pas à nous rejoindre ou à nous écrire.',
+        'contact.address.street': '1 rue des Braves',
+        'contact.address.postal_city': '31300 Toulouse',
+        'contact.address.country': 'France',
+        'contact.address.city': 'Toulouse, France',
+        'contact.address.transit': 'Tram T1 — Zénith | Métro Ligne A — Pâte d\'Oie',
+        'contact.email': 'larencontrefr@gmail.com',
+        'contact.service_times.title': 'Horaires des cultes',
+        'contact.service_times.sunday.day': 'Dimanche',
+        'contact.service_times.sunday.time': '10h00',
+        'contact.form.title': 'Envoyez-nous un message',
+        'contact.form.subtitle': 'Nous vous répondrons dans les plus brefs délais.',
+        'contact.kicker': 'Parlons ensemble',
+        'contact.title': 'Nous contacter',
+        'contact.address.label': 'Adresse',
+        'contact.email.label': 'Email',
+        'contact.form.name': 'Votre nom',
+        'contact.form.first_name': 'Prénom',
+        'contact.form.last_name': 'Nom',
+        'contact.form.phone': 'Téléphone',
+        'contact.form.email': 'Votre email',
+        'contact.form.subject': 'Sujet',
+        'contact.form.message': 'Votre message',
+        'contact.form.submit': 'Envoyer le message',
+        'contact.form.subject.general': 'Question générale',
+        'contact.form.subject.groups': 'Home Groups',
+        'contact.form.subject.baptism': 'Baptême',
+        'contact.form.subject.prayer': 'Demande de prière',
+        'contact.form.subject.other': 'Autre',
+        'contact.form.message.placeholder': 'Comment pouvons-nous vous aider ?',
+        'contact.form.success.title': 'Message envoyé avec succès !',
+        'contact.form.success.text': 'Nous vous répondrons bientôt.',
+        'contact.map.placeholder': 'Carte interactive bientôt disponible',
+    });
+
+    setTimeout(() => {
+        const form = document.getElementById('contact-form');
+        const successMessage = document.getElementById('contact-success');
+        const errorMessage = document.getElementById('contact-error');
+        const submitButton = form?.querySelector('button[type="submit"]');
+
+        if (!form || !submitButton) return;
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            errorMessage?.classList.add('hidden');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Envoi en cours…';
+
+            const formData = new FormData(form);
+            const payload = {
+                first_name: String(formData.get('first_name') || '').trim(),
+                last_name: String(formData.get('last_name') || '').trim(),
+                email: String(formData.get('email') || '').trim(),
+                phone: String(formData.get('phone') || '').trim(),
+                subject: String(formData.get('subject') || 'general'),
+                message: String(formData.get('message') || '').trim(),
+            };
+
+            try {
+                await api.post('/api/contact', payload);
+                form.reset();
+                form.classList.add('hidden');
+                successMessage?.classList.remove('hidden');
+            } catch (error) {
+                if (errorMessage) {
+                    errorMessage.textContent = error.message || 'Le message n’a pas pu être envoyé. Veuillez réessayer.';
+                    errorMessage.classList.remove('hidden');
+                }
+                submitButton.disabled = false;
+                submitButton.textContent = c['contact.form.submit'];
+            }
+        });
+    }, 100);
+
+    const fullAddress = `${c['contact.address.street']}, ${c['contact.address.postal_city']}, ${c['contact.address.country']}`;
+    const encodedAddress = encodeURIComponent(fullAddress);
+
     return `
-    <div class="bg-paper text-ink font-sans min-h-screen">
+    <div class="elr-page font-sans">
         <!-- Header -->
-        <section class="pt-24 pb-12 px-6 text-center bg-gradient-to-b from-haze to-paper">
-            <h1 class="text-4xl md:text-7xl font-black mb-6 font-serif tracking-tighter">Contact</h1>
-            <p class="text-xl md:text-2xl text-black/60 max-w-2xl mx-auto italic font-serif leading-relaxed">
-                Nous sommes là pour vous. N'hésitez pas à nous rejoindre ou à nous écrire.
+        <section class="elr-page-hero">
+            <p class="elr-kicker">${c['contact.kicker']}</p>
+            <h1 class="elr-page-title">${c['contact.title']}</h1>
+            <p class="elr-page-lead">
+                ${c['contact.description']}
             </p>
-            <div class="mx-auto mt-10 h-1 w-24 bg-punch"></div>
         </section>
 
         <!-- Contact Content -->
@@ -17,7 +99,7 @@ export function contact() {
                 <!-- Contact Info -->
                 <div class="space-y-6">
                     <!-- Address Card -->
-                    <div class="rounded-3xl p-6 md:p-8 bg-haze border border-black/5 shadow-soft">
+                    <div class="elr-surface p-6 shadow-soft md:p-8">
                         <div class="flex items-start gap-4">
                             <div class="h-12 w-12 rounded-2xl bg-punch/10 flex items-center justify-center flex-shrink-0">
                                 <svg class="h-6 w-6 text-punch" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26,29 +108,19 @@ export function contact() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-black">Adresse</h3>
-                                <p class="mt-1 text-black/70">123 Rue de l'Église<br />75000 Paris, France</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Phone Card -->
-                    <div class="rounded-3xl p-6 md:p-8 bg-haze border border-black/5 shadow-soft">
-                        <div class="flex items-start gap-4">
-                            <div class="h-12 w-12 rounded-2xl bg-glow/20 flex items-center justify-center flex-shrink-0">
-                                <svg class="h-6 w-6 text-glow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-black">Téléphone</h3>
-                                <p class="mt-1 text-black/70">01 23 45 67 89</p>
+                                <h3 class="text-lg font-black">${c['contact.address.label']}</h3>
+                                <address class="mt-1 not-italic leading-relaxed text-black/70">
+                                    ${c['contact.address.street']}<br>
+                                    ${c['contact.address.postal_city']}<br>
+                                    ${c['contact.address.country']}
+                                </address>
+                                <p class="mt-3 text-sm text-black/50">${c['contact.address.transit']}</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Email Card -->
-                    <div class="rounded-3xl p-6 md:p-8 bg-haze border border-black/5 shadow-soft">
+                    <div class="elr-surface p-6 shadow-soft md:p-8">
                         <div class="flex items-start gap-4">
                             <div class="h-12 w-12 rounded-2xl bg-ink/10 flex items-center justify-center flex-shrink-0">
                                 <svg class="h-6 w-6 text-ink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,8 +128,8 @@ export function contact() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-black">Email</h3>
-                                <p class="mt-1 text-black/70">contact@eglise-larencontre.fr</p>
+                                <h3 class="text-lg font-black">${c['contact.email.label']}</h3>
+                                <p class="mt-1 text-black/70">${c['contact.email']}</p>
                             </div>
                         </div>
                     </div>
@@ -68,43 +140,48 @@ export function contact() {
                             <svg class="h-5 w-5 text-glow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Horaires des cultes
+                            ${c['contact.service_times.title']}
                         </h3>
                         <ul class="mt-4 space-y-2 text-paper/80">
                             <li class="flex justify-between">
-                                <span>Dimanche</span>
-                                <span class="font-bold">10h00</span>
-                            </li>
-                            <li class="flex justify-between">
-                                <span>Mercredi (Prière)</span>
-                                <span class="font-bold">19h30</span>
-                            </li>
-                            <li class="flex justify-between">
-                                <span>Samedi (Jeunesse)</span>
-                                <span class="font-bold">18h00</span>
+                                <span>${c['contact.service_times.sunday.day']}</span>
+                                <span class="font-bold">${c['contact.service_times.sunday.time']}</span>
                             </li>
                         </ul>
                     </div>
                 </div>
 
                 <!-- Contact Form -->
-                <div class="rounded-3xl p-6 md:p-8 bg-paper border border-black/5 shadow-soft">
-                    <h2 class="text-2xl md:text-3xl font-black mb-2">Envoyez-nous un message</h2>
-                    <p class="text-black/60 mb-8">Nous vous répondrons dans les plus brefs délais.</p>
+                <div class="elr-surface p-6 shadow-soft md:p-8">
+                    <h2 class="text-2xl md:text-3xl font-black mb-2">${c['contact.form.title']}</h2>
+                    <p class="text-black/60 mb-8">${c['contact.form.subtitle']}</p>
 
                     <form id="contact-form" class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-bold text-black/70 mb-2">Votre nom</label>
+                        <div class="grid gap-5 sm:grid-cols-2">
+                          <div>
+                            <label class="block text-sm font-bold text-black/70 mb-2">${c['contact.form.first_name']}</label>
                             <input
                                 type="text"
-                                name="name"
+                                name="first_name"
                                 required
                                 class="w-full rounded-2xl px-5 py-4 bg-haze border border-black/10 focus:border-punch focus:outline-none transition"
-                                placeholder="Jean Dupont">
+                                autocomplete="given-name"
+                                placeholder="Marie">
+                          </div>
+                          <div>
+                            <label class="block text-sm font-bold text-black/70 mb-2">${c['contact.form.last_name']}</label>
+                            <input
+                                type="text"
+                                name="last_name"
+                                required
+                                class="w-full rounded-2xl px-5 py-4 bg-haze border border-black/10 focus:border-punch focus:outline-none transition"
+                                autocomplete="family-name"
+                                placeholder="Dupont">
+                          </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-black/70 mb-2">Votre email</label>
+                            <label class="block text-sm font-bold text-black/70 mb-2">${c['contact.form.email']}</label>
                             <input
                                 type="email"
                                 name="email"
@@ -114,87 +191,79 @@ export function contact() {
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-black/70 mb-2">Sujet</label>
+                            <label class="block text-sm font-bold text-black/70 mb-2">${c['contact.form.phone']}</label>
+                            <input
+                                type="tel"
+                                name="phone"
+                                required
+                                minlength="6"
+                                autocomplete="tel"
+                                class="w-full rounded-2xl px-5 py-4 bg-haze border border-black/10 focus:border-punch focus:outline-none transition"
+                                placeholder="+33 6 12 34 56 78">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-black/70 mb-2">${c['contact.form.subject']}</label>
                             <select
                                 name="subject"
                                 class="w-full rounded-2xl px-5 py-4 bg-haze border border-black/10 focus:border-punch focus:outline-none transition">
-                                <option value="general">Question générale</option>
-                                <option value="home-group">Home Groups</option>
-                                <option value="baptism">Baptême</option>
-                                <option value="prayer">Demande de prière</option>
-                                <option value="other">Autre</option>
+                                <option value="general">${c['contact.form.subject.general']}</option>
+                                <option value="home-group">${c['contact.form.subject.groups']}</option>
+                                <option value="baptism">${c['contact.form.subject.baptism']}</option>
+                                <option value="prayer">${c['contact.form.subject.prayer']}</option>
+                                <option value="other">${c['contact.form.subject.other']}</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-black/70 mb-2">Votre message</label>
+                            <label class="block text-sm font-bold text-black/70 mb-2">${c['contact.form.message']}</label>
                             <textarea
                                 name="message"
                                 rows="5"
                                 required
                                 class="w-full rounded-2xl px-5 py-4 bg-haze border border-black/10 focus:border-punch focus:outline-none transition resize-none"
-                                placeholder="Comment pouvons-nous vous aider ?"></textarea>
+                                placeholder="${c['contact.form.message.placeholder']}"></textarea>
                         </div>
 
                         <button
                             type="submit"
                             class="w-full rounded-full px-8 py-4 font-black bg-ink text-paper hover:opacity-90 transition text-lg">
-                            Envoyer le message
+                            ${c['contact.form.submit']}
                         </button>
                     </form>
 
                     <div id="contact-success" class="hidden mt-6 p-4 rounded-2xl bg-glow/20 text-center">
-                        <p class="font-bold text-ink">Message envoyé avec succès !</p>
-                        <p class="text-black/70 text-sm mt-1">Nous vous répondrons bientôt.</p>
+                        <p class="font-bold text-ink">${c['contact.form.success.title']}</p>
+                        <p class="text-black/70 text-sm mt-1">${c['contact.form.success.text']}</p>
                     </div>
+                    <div id="contact-error" role="alert" class="hidden mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Map Section (placeholder) -->
+        <!-- Map Section -->
         <section class="mx-auto max-w-6xl px-4 pb-16">
-            <div class="rounded-3xl overflow-hidden border border-black/5 shadow-soft h-64 md:h-96 bg-haze flex items-center justify-center">
-                <div class="text-center">
-                    <svg class="h-16 w-16 text-black/20 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                    </svg>
-                    <p class="mt-4 text-black/40 font-bold">Carte interactive bientôt disponible</p>
+            <div class="relative overflow-hidden rounded-[2rem] border border-black/10 bg-haze shadow-soft md:rounded-[3rem]">
+                <iframe
+                    title="Localisation de l’Église La Rencontre"
+                    src="https://www.google.com/maps?q=${encodedAddress}&output=embed"
+                    class="h-[360px] w-full border-0 md:h-[520px]"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen>
+                </iframe>
+                <div class="m-4 rounded-2xl border border-black/10 bg-white p-5 shadow-soft md:absolute md:bottom-4 md:left-4 md:m-0 md:max-w-sm">
+                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-punch">Nous trouver</p>
+                    <address class="mt-2 font-serif text-lg font-semibold not-italic leading-snug text-ink">${fullAddress}</address>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="mt-4 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-black text-white transition hover:bg-punch">
+                        Obtenir l’itinéraire <span aria-hidden="true">↗</span>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <!-- Script for form handling -->
-        <script>
-            setTimeout(() => {
-                const form = document.getElementById('contact-form');
-                const successMsg = document.getElementById('contact-success');
-
-                if (form) {
-                    form.addEventListener('submit', (e) => {
-                        e.preventDefault();
-
-                        // Simulate form submission
-                        const btn = form.querySelector('button[type="submit"]');
-                        btn.disabled = true;
-                        btn.textContent = 'Envoi en cours...';
-
-                        setTimeout(() => {
-                            form.reset();
-                            form.classList.add('hidden');
-                            successMsg.classList.remove('hidden');
-
-                            // Reset after 5 seconds
-                            setTimeout(() => {
-                                form.classList.remove('hidden');
-                                successMsg.classList.add('hidden');
-                                btn.disabled = false;
-                                btn.textContent = 'Envoyer le message';
-                            }, 5000);
-                        }, 1500);
-                    });
-                }
-            }, 100);
-        </script>
     </div>
     `;
 }

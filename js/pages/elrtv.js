@@ -1,7 +1,21 @@
 import { api } from '../services/api.service.js';
+import { tAll } from '../services/site-content.service.js';
 
 // Page ELR TV - Lecteur média avec style Tailwind
 export async function elrtv() {
+    const c = await tAll({
+        'elrtv.kicker': 'Watch & Listen',
+        'elrtv.title': 'ELR TV',
+        'elrtv.subtitle': 'Retrouvez nos prédications, célébrations et contenus multimédias pour grandir ensemble.',
+        'elrtv.latest': 'Dernières Vidéos',
+        'elrtv.channel': 'Flux de la chaîne @EgliseLaRencontre',
+        'elrtv.playlists': 'Toutes nos Playlists',
+        'elrtv.media': 'Médias complémentaires',
+        'elrtv.podcast.title': 'Podcast hebdomadaire',
+        'elrtv.podcast.text': 'Découvrez nos enseignements format audio pour vous accompagner partout.',
+        'elrtv.study.title': 'Approfondissement',
+        'elrtv.study.text': 'Des vidéos courtes pour approfondir certains thèmes bibliques.',
+    });
     let playlists = [];
     let activePlaylistId = 'UUJ6ItUaNtiSYZBy2sUavMFQ'; // Default to "Uploads"
     let loading = true;
@@ -82,13 +96,14 @@ export async function elrtv() {
     };
 
     return `
+      <div class="elr-page">
         <!-- Header -->
-        <section class="mx-auto max-w-6xl px-4 py-12 md:py-16">
+        <section class="elr-page-hero">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <p class="text-xs font-extrabold tracking-widest text-black/50 uppercase">Watch & Listen</p>
-                    <h1 class="mt-2 text-4xl md:text-5xl font-black font-serif">ELR TV</h1>
-                    <p class="mt-2 text-black/60 max-w-md">Retrouvez nos prédications, célébrations et contenus multimédias pour grandir ensemble.</p>
+                    <p class="elr-kicker">${c['elrtv.kicker']}</p>
+                    <h1 class="elr-page-title">${c['elrtv.title']}</h1>
+                    <p class="elr-page-lead">${c['elrtv.subtitle']}</p>
                 </div>
                 
                 ${error ? `
@@ -100,15 +115,14 @@ export async function elrtv() {
                 </div>` : ''}
             </div>
 
-            <div class="mt-8 h-px bg-rule"></div>
         </section>
 
         <!-- Dynamic Player Section -->
         <section id="player-section" class="mx-auto max-w-6xl px-4 pb-16">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h2 id="player-playlist-name" class="text-xl md:text-2xl font-black">Dernières Vidéos</h2>
-                    <p class="text-sm text-black/50">Flux de la chaîne @EgliseLaRencontre</p>
+                    <h2 id="player-playlist-name" class="text-xl md:text-2xl font-black">${c['elrtv.latest']}</h2>
+                    <p class="text-sm text-black/50">${c['elrtv.channel']}</p>
                 </div>
                 <a href="https://www.youtube.com/@EgliseLaRencontre" target="_blank" class="hidden md:flex items-center gap-2 rounded-full bg-punch px-4 py-2 text-white text-sm font-bold shadow-sm hover:opacity-90">
                     <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
@@ -134,7 +148,7 @@ export async function elrtv() {
         <section class="bg-black/5 py-16">
             <div class="mx-auto max-w-6xl px-4">
                 <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-2xl font-black font-serif">Toutes nos Playlists</h2>
+                    <h2 class="text-2xl font-black font-serif">${c['elrtv.playlists']}</h2>
                     <span class="text-xs font-bold uppercase tracking-widest text-black/30 md:block hidden">← Glisser pour explorer →</span>
                 </div>
                 
@@ -146,7 +160,7 @@ export async function elrtv() {
 
         <!-- Local / Audio Section -->
         <section class="mx-auto max-w-6xl px-4 py-20">
-            <h2 class="text-xl md:text-2xl font-black mb-10">Médias complémentaires</h2>
+            <h2 class="text-xl md:text-2xl font-black mb-10">${c['elrtv.media']}</h2>
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 <article class="media-card group rounded-[2.5rem] overflow-hidden bg-paper shadow-soft border border-rule cursor-pointer hover:shadow-xl transition-all duration-500" data-type="audio" data-url="https://www.w3schools.com/html/horse.mp3">
                     <div class="aspect-video relative overflow-hidden bg-ink/5 flex items-center justify-center">
@@ -156,8 +170,8 @@ export async function elrtv() {
                     </div>
                     <div class="p-8">
                         <span class="inline-flex items-center rounded-full bg-glow/30 text-ink px-4 py-1.5 text-[10px] font-black tracking-widest uppercase">Podcast</span>
-                        <h3 class="mt-4 text-xl font-black font-serif">Podcast hebdomadaire</h3>
-                        <p class="mt-2 text-black/50 text-sm leading-relaxed">Découvrez nos enseignements format audio pour vous accompagner partout.</p>
+                        <h3 class="mt-4 text-xl font-black font-serif">${c['elrtv.podcast.title']}</h3>
+                        <p class="mt-2 text-black/50 text-sm leading-relaxed">${c['elrtv.podcast.text']}</p>
                     </div>
                 </article>
 
@@ -169,12 +183,13 @@ export async function elrtv() {
                     </div>
                     <div class="p-8">
                         <span class="inline-flex items-center rounded-full bg-punch/10 text-punch px-4 py-1.5 text-[10px] font-black tracking-widest uppercase">Étude</span>
-                        <h3 class="mt-4 text-xl font-black font-serif">Approfondissement</h3>
-                        <p class="mt-2 text-black/50 text-sm leading-relaxed">Des vidéos courtes pour approfondir certains thèmes bibliques.</p>
+                        <h3 class="mt-4 text-xl font-black font-serif">${c['elrtv.study.title']}</h3>
+                        <p class="mt-2 text-black/50 text-sm leading-relaxed">${c['elrtv.study.text']}</p>
                     </div>
                 </article>
             </div>
         </section>
+      </div>
     `;
 }
 

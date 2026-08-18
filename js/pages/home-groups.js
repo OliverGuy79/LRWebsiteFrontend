@@ -1,13 +1,25 @@
 import { api } from '../services/api.service.js';
+import { tAll } from '../services/site-content.service.js';
 
 export async function homeGroups() {
     let groupsList = [];
     let loading = true;
     let error = null;
 
+    const [groupsResponse, c] = await Promise.all([
+        api.getHomeGroups().catch(() => null),
+        tAll({
+            'home_groups.title': 'Les Home Groups',
+            'home_groups.subtitle': 'Connectez-vous, partagez et grandissez au cœur de petits groupes conviviaux.',
+            'home_groups.cta.title': 'Envie de nous rejoindre ?',
+            'home_groups.cta.description': 'Il y a forcément un groupe près de chez vous. Pour toute question ou pour trouver le groupe qui vous correspond, nous sommes à votre écoute.',
+            'home_groups.cta.button': 'Trouver mon groupe',
+        }).catch(() => ({}))
+    ]);
+
     try {
         // Fetch home groups
-        const response = await api.getHomeGroups();
+        const response = groupsResponse;
         console.log("Home Groups Response:", response);
 
         if (response) {
@@ -154,14 +166,14 @@ export async function homeGroups() {
     }, 100);
 
     return `
-    <div class="bg-paper text-ink font-sans min-h-screen">
+    <div class="elr-page font-sans">
         <!-- Header -->
-        <section class="pt-24 pb-12 px-6 text-center">
-            <h1 class="text-4xl md:text-7xl font-black mb-6 font-serif tracking-tighter">Les Home Groups</h1>
-            <p class="text-xl md:text-2xl text-black/60 max-w-2xl mx-auto italic font-serif leading-relaxed">
-                Connectez-vous, partagez et grandissez au cœur de petits groupes conviviaux.
+        <section class="elr-page-hero">
+            <p class="elr-kicker">La vie ensemble</p>
+            <h1 class="elr-page-title">Les Home <span class="font-serif font-medium italic text-punch">Groups</span></h1>
+            <p class="elr-page-lead">
+                ${c["home_groups.subtitle"] || "Connectez-vous, partagez et grandissez."}
             </p>
-            <div class="mx-auto mt-10 h-1 w-24 bg-punch"></div>
         </section>
 
         <!-- Carousel -->
@@ -197,12 +209,12 @@ export async function homeGroups() {
                     <div class="absolute top-0 right-0 w-64 h-64 bg-punch/10 rounded-full -mr-32 -mt-32"></div>
                     <div class="absolute bottom-0 left-0 w-48 h-48 bg-glow/5 rounded-full -ml-24 -mb-24"></div>
 
-                    <h3 class="text-3xl md:text-4xl font-black font-serif mb-6 relative z-10">Envie de nous rejoindre ?</h3>
+                    <h3 class="text-3xl md:text-4xl font-black font-serif mb-6 relative z-10">${c["home_groups.cta.title"] || "Envie de nous rejoindre ?"}</h3>
                     <p class="text-paper/70 max-w-xl mx-auto mb-10 text-lg relative z-10">
-                        Il y a forcément un groupe près de chez vous. Pour toute question ou pour trouver le groupe qui vous correspond, nous sommes à votre écoute.
+                        ${c["home_groups.cta.description"] || "Il y a forcément un groupe près de chez vous."}
                     </p>
                     <a href="#/contact" class="inline-flex rounded-full bg-paper text-ink px-10 py-4 font-black text-lg hover:scale-105 transition-transform duration-300 relative z-10">
-                        Trouver mon groupe
+                        ${c["home_groups.cta.button"] || "Trouver mon groupe"}
                     </a>
                 </div>
             </div>

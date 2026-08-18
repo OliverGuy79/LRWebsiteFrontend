@@ -1,13 +1,49 @@
 import { api } from '../services/api.service.js';
+import { tAll } from '../services/site-content.service.js';
 
 export async function journal() {
+    const c = await tAll({
+        'journal.kicker': 'Le journal de La Rencontre',
+        'journal.subtitle': 'Histoires, nouvelles et témoignages de la vie de l’église.',
+        'journal.latest.title': 'Dernières publications',
+        'journal.latest.subtitle': 'Retrouvez tous nos articles et actualités.',
+        'journal.filter.label': 'Filtre actif',
+        'journal.filter.clear': 'Afficher tous les articles ×',
+        'journal.empty.title': 'Aucune publication trouvée',
+        'journal.empty.text': 'Aucun article ne correspond à ce filtre pour le moment.',
+        'journal.empty.button': 'Voir tous les articles',
+        'journal.read': 'À lire',
+        'journal.discover': 'À découvrir',
+        'journal.now': 'En ce moment',
+    });
+    const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+    const activeCategory = (params.get('category') || '').trim();
+    const activeTag = (params.get('tag') || '').trim();
     let articles = [];
     try {
-        const response = await api.getArticles();
+        const response = await api.getArticles(activeCategory || null, null, false, activeTag || null);
         if (response && Array.isArray(response.articles)) {
             articles = response.articles;
         } else if (Array.isArray(response)) {
             articles = response;
+        }
+
+        // Certains environnements de l'API ignorent encore les paramètres de
+        // filtre. Ce second contrôle garantit le même résultat côté interface.
+        if (activeCategory) {
+            articles = articles.filter(article =>
+                String(article.category || '').localeCompare(activeCategory, 'fr', { sensitivity: 'base' }) === 0
+            );
+        }
+        if (activeTag) {
+            articles = articles.filter(article => {
+                const tags = Array.isArray(article.tags)
+                    ? article.tags
+                    : String(article.tags || '').split(',');
+                return tags.some(tag =>
+                    String(tag).trim().localeCompare(activeTag, 'fr', { sensitivity: 'base' }) === 0
+                );
+            });
         }
     } catch (error) {
         console.error("Erreur chargement articles:", error);
@@ -27,13 +63,16 @@ export async function journal() {
         return article.image || 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1000&q=80';
     };
 
-    // Séparer les articles
-    const featuredArticle = articles[0];
-    const sidebarArticles = articles.slice(1, 5);
-    const columnAArticles = articles.slice(5, 8);
-    const columnBArticles = articles.slice(8, 10);
-    const columnCArticles = articles.slice(10, 13);
-    const listArticles = articles.slice(13, 16);
+    // En vue filtrée, tous les résultats doivent apparaître dans la section
+    // des publications. La une et la sélection latérale restent réservées à
+    // la vue générale du journal.
+    const isFiltered = Boolean(activeCategory || activeTag);
+    const featuredArticle = isFiltered ? null : articles[0];
+    const sidebarArticles = isFiltered ? [] : articles.slice(1, 5);
+    const columnAArticles = isFiltered ? articles.slice(0, 3) : articles.slice(5, 8);
+    const columnBArticles = isFiltered ? articles.slice(3, 5) : articles.slice(8, 10);
+    const columnCArticles = isFiltered ? articles.slice(5, 8) : articles.slice(10, 13);
+    const listArticles = isFiltered ? articles.slice(8) : articles.slice(13, 16);
 
     // Rendu de l'article à la une
     const renderFeatured = () => {
@@ -199,7 +238,7 @@ export async function journal() {
     const today = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
     return `
-    <div class="bg-paper text-ink">
+    <div class="elr-page">
       <!-- Top utility bar -->
       <div class="border-b border-rule">
         <div class="mx-auto max-w-7xl px-4 py-2 flex items-center justify-between text-xs text-black/70">
@@ -214,14 +253,16 @@ export async function journal() {
 
       <!-- Masthead -->
       <header class="border-b border-rule">
-        <div class="mx-auto max-w-7xl px-4 py-6">
-          <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <a href="#/" class="text-center md:text-left group">
-              <div class="font-black tracking-tight text-4xl md:text-6xl leading-none group-hover:text-punch transition-colors">
-                ELR ACTU
+        <div class="mx-auto max-w-7xl px-4 py-8 md:py-12">
+          <div class="flex flex-col gap-7 md:flex-row md:items-end md:justify-between">
+            <a href="#/journal" class="group text-center md:text-left">
+              <div class="text-[10px] font-black uppercase tracking-[0.32em] text-black/40">${c['journal.kicker']}</div>
+              <div class="mt-3 flex items-baseline justify-center gap-3 md:justify-start">
+                <span class="font-display text-5xl font-extrabold leading-none tracking-[-0.06em] transition-colors group-hover:text-punch md:text-8xl">ELR</span>
+                <span class="font-serif text-5xl font-semibold italic leading-none text-punch md:text-8xl">Actu</span>
               </div>
-              <div class="mt-2 text-sm text-black/70">
-                L'actualité de l'Église La Rencontre
+              <div class="mt-4 max-w-xl font-serif text-base italic text-black/55 md:text-lg">
+                ${c['journal.subtitle']}
               </div>
             </a>
 
@@ -237,21 +278,19 @@ export async function journal() {
         </div>
 
         <!-- Navigation -->
-        <nav class="border-t border-rule">
-          <div class="mx-auto max-w-7xl px-4">
-            <div class="flex gap-6 overflow-x-auto py-3 text-sm font-semibold whitespace-nowrap">
-              <a class="hover:text-punch transition-colors" href="#/journal">Actualités</a>
-              <a class="hover:text-punch transition-colors" href="#/vision">Vision</a>
-              <a class="hover:text-punch transition-colors" href="#/services">Cultes</a>
-              <a class="hover:text-punch transition-colors" href="#/home-groups">Groupes de maison</a>
-              <a class="hover:text-punch transition-colors" href="#/elrtv">ELR TV</a>
-            </div>
-          </div>
-        </nav>
       </header>
 
       <!-- Body -->
       <main class="mx-auto max-w-7xl px-4 py-10">
+        ${activeCategory || activeTag ? `
+        <div class="mb-8 flex flex-wrap items-center gap-3 rounded-2xl border border-rule bg-haze px-5 py-4">
+          <span class="text-xs font-black uppercase tracking-[0.16em] text-black/45">${c['journal.filter.label']}</span>
+          <span class="rounded-full bg-ink px-4 py-2 text-sm font-bold text-white">
+            ${activeTag ? `#${activeTag}` : activeCategory}
+          </span>
+          <a href="#/journal" class="ml-auto text-sm font-bold text-punch hover:underline">${c['journal.filter.clear']}</a>
+        </div>` : ''}
+        ${!isFiltered ? `
         <!-- HERO GRID -->
         <section class="grid gap-8 lg:grid-cols-12">
           ${renderFeatured()}
@@ -260,7 +299,7 @@ export async function journal() {
           <aside class="lg:col-span-4">
             <div class="sticky top-6">
               <div class="flex items-end justify-between">
-                <h2 class="text-sm font-black tracking-widest uppercase text-black/60">À lire</h2>
+                <h2 class="text-sm font-black tracking-widest uppercase text-black/60">${c['journal.read']}</h2>
               </div>
 
               <div class="mt-4 divide-y divide-rule border border-rule rounded-2xl overflow-hidden">
@@ -280,17 +319,24 @@ export async function journal() {
             </div>
           </aside>
         </section>
+        ` : ''}
 
         <!-- Three-column strip -->
         <section id="latest" class="mt-12">
           <div class="flex items-end justify-between gap-6">
             <div>
-              <h2 class="text-2xl md:text-3xl font-black font-serif">Dernières publications</h2>
-              <p class="mt-2 text-black/70">Retrouvez tous nos articles et actualités.</p>
+              <h2 class="font-display text-4xl font-extrabold tracking-tight md:text-6xl">${c['journal.latest.title']}</h2>
+              <p class="mt-2 text-black/70">${c['journal.latest.subtitle']}</p>
             </div>
           </div>
 
           <div class="mt-8 grid gap-8 lg:grid-cols-12">
+            ${articles.length === 0 ? `
+            <div class="rounded-3xl border border-rule bg-haze px-6 py-16 text-center lg:col-span-12">
+              <h3 class="font-display text-3xl font-extrabold">${c['journal.empty.title']}</h3>
+              <p class="mt-3 text-black/60">${c['journal.empty.text']}</p>
+              <a href="#/journal" class="mt-6 inline-flex rounded-full bg-ink px-5 py-3 font-bold text-white">${c['journal.empty.button']}</a>
+            </div>` : ''}
             <!-- Column A -->
             <div class="lg:col-span-4">
               <div class="border-t border-rule pt-6">
@@ -311,7 +357,7 @@ export async function journal() {
             <div class="lg:col-span-3">
               <div class="border-t border-rule pt-6">
                 <div class="flex items-end justify-between">
-                  <h3 class="text-sm font-black tracking-widest uppercase text-black/60">À découvrir</h3>
+                  <h3 class="text-sm font-black tracking-widest uppercase text-black/60">${c['journal.discover']}</h3>
                 </div>
 
                 <div class="mt-4 space-y-4">
@@ -342,7 +388,7 @@ export async function journal() {
         ${listArticles.length > 0 ? `
         <section class="mt-14">
           <div class="flex items-end justify-between gap-6">
-            <h2 class="text-2xl md:text-3xl font-black font-serif">En ce moment</h2>
+            <h2 class="font-display text-4xl font-extrabold tracking-tight md:text-6xl">${c['journal.now']}</h2>
           </div>
 
           <div class="mt-6 border-t border-rule">
@@ -359,7 +405,7 @@ export async function journal() {
                 <div class="py-6 lg:pl-8">
                   <div class="text-xs font-black tracking-widest uppercase text-black/60">Prochains événements</div>
                   <div class="mt-3 space-y-3">
-                    <a href="#/services" class="block rounded-2xl border border-rule p-4 hover:bg-haze transition-colors">
+                    <a href="#/contact" class="block rounded-2xl border border-rule p-4 hover:bg-haze transition-colors">
                       <div class="font-black">Dimanche • 10:00</div>
                       <div class="text-black/70">Culte du dimanche</div>
                     </a>
@@ -374,7 +420,7 @@ export async function journal() {
                     <p class="mt-2 text-black/70">
                       L'Église La Rencontre vous accueille tous les dimanches pour le culte.
                     </p>
-                    <a href="#/services" class="mt-3 inline-flex text-sm font-bold text-punch hover:opacity-80 transition-opacity">
+                    <a href="#/contact" class="mt-3 inline-flex text-sm font-bold text-punch hover:opacity-80 transition-opacity">
                       Voir les horaires →
                     </a>
                   </div>

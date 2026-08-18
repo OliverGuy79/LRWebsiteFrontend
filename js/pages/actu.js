@@ -97,7 +97,7 @@ export async function actu() {
     const gridHtml = gridArticles.map(a => renderArticleCard(a, 'grid')).join('');
 
     return `
-    <div class="bg-paper text-ink">
+    <div class="elr-page">
         <!-- Masthead -->
         <header class="border-b border-rule">
             <div class="mx-auto max-w-7xl px-4 py-6">
@@ -151,7 +151,7 @@ export async function actu() {
             <section id="latest" class="mt-12">
                  <div class="flex items-end justify-between gap-6 mb-8">
                     <div>
-                        <h2 class="text-2xl md:text-3xl font-black font-serif">Dernières publications</h2>
+                        <h2 class="font-display text-4xl font-extrabold tracking-tight md:text-6xl">Dernières <span class="font-serif font-medium italic text-punch">publications</span></h2>
                     </div>
                 </div>
                 

@@ -1,148 +1,122 @@
-import { api } from '../services/api.service.js';
+import { tAll } from '../services/site-content.service.js';
 
 export async function services() {
-    let servicesList = [];
-    let loading = true;
-    let error = null;
-
-    try {
-        // Fetch services
-        const response = await api.getServices();
-        if (response && Array.isArray(response.services)) {
-            servicesList = response.services;
-        } else if (Array.isArray(response)) {
-            servicesList = response;
-        }
-
-        // Filter published
-        servicesList = servicesList.filter(s => s.status === 'published');
-
-        // Sort by display_order
-        servicesList.sort((a, b) => (parseInt(a.display_order) || 99) - (parseInt(b.display_order) || 99));
-
-    } catch (err) {
-        console.error("Erreur chargement services:", err);
-        error = "Impossible de charger les services.";
-    }
-
-    loading = false;
-
-    if (loading) {
-        return `
-        <div class="min-h-screen bg-paper flex items-center justify-center">
-            <div class="text-center animate-pulse">
-                <div class="text-xl font-serif text-black/60">Chargement des services...</div>
-            </div>
-        </div>`;
-    }
-
-    if (error) {
-        return `
-        <div class="min-h-screen bg-paper flex flex-col items-center justify-center p-4">
-            <h1 class="text-3xl font-black text-punch mb-4">Oups !</h1>
-            <p class="text-lg text-black/70 mb-8">${error}</p>
-            <a href="#/" class="rounded-full px-6 py-3 font-bold bg-ink text-paper hover:opacity-90 transition-opacity">
-                Retour à l'accueil
-            </a>
-        </div>`;
-    }
-
-    // Helper to format time (remove seconds if present)
-    const formatTime = (time) => {
-        if (!time) return '';
-        const [hours, minutes] = time.split(':');
-        return `${hours}h${minutes}`;
-    };
-
-    const renderServiceCard = (service) => {
-        const image = service.image || 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&q=80&w=1000';
-
-        return `
-        <div class="snap-center shrink-0 w-[85vw] md:w-[45vw] lg:w-[30vw] group relative overflow-hidden rounded-3xl border border-rule shadow-soft bg-paper transition-all hover:scale-[1.01]">
-             <!-- Layout Vertical for Carousel -->
-            <div class="flex flex-col h-full">
-                <!-- Image -->
-                <div class="h-56 relative overflow-hidden">
-                    <img src="${image}" alt="${service.name}" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
-                    
-                    <!-- Badge Jour/Heure sur l'image -->
-                    <div class="absolute top-4 left-4 bg-paper/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-black/5 shadow-sm">
-                        ${service.day_of_week} • ${formatTime(service.start_time)}
-                    </div>
-                </div>
-                
-                <!-- Content -->
-                <div class="p-6 md:p-8 flex flex-col flex-grow">
-                    <h2 class="text-2xl md:text-3xl font-black font-serif text-ink mb-3 leading-tight">
-                        ${service.name}
-                    </h2>
-
-                    <p class="text-black/70 text-base md:text-lg leading-relaxed mb-6 flex-grow">
-                        ${service.description}
-                    </p>
-
-                    <div class="flex flex-wrap gap-4 text-sm text-black/60 font-medium mt-auto border-t border-rule pt-4">
-                        <div class="flex items-center gap-2 w-full">
-                            <i class="fas fa-map-marker-alt text-punch w-4 text-center"></i>
-                            <span>${service.location}</span>
-                        </div>
-                        ${service.leaders ? `
-                        <div class="flex items-center gap-2 w-full">
-                            <i class="fas fa-user text-punch w-4 text-center"></i>
-                            <span>${service.leaders}</span>
-                        </div>` : ''}
-                        ${String(service.has_childcare).toUpperCase() === 'TRUE' || service.has_childcare === true ? `
-                        <div class="flex items-center gap-2 text-green-700 bg-green-50 px-2 py-1 rounded-md border border-green-100 mt-2 w-full justify-center">
-                            <i class="fas fa-child"></i>
-                            <span>Garderie disponible</span>
-                        </div>` : ''}
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
-    };
-
-    const servicesHtml = servicesList.map(renderServiceCard).join('');
-
+    const c = await tAll({
+        'connect.hero.kicker': 'Église La Rencontre',
+        'connect.what.title': 'Quoi',
+        'connect.what.text': 'Découvrir la vision, les valeurs et comment trouver ta place dans l’église.',
+        'connect.when.title': 'Quand',
+        'connect.when.text': 'Chaque 2e dimanche du mois, pendant 3 semaines, à 9h00.',
+        'connect.how.title': 'Comment',
+        'connect.how.text': 'Inscris-toi à la table d’accueil pour le prochain parcours.',
+        'connect.journey.kicker': 'Le parcours',
+        'connect.journey.title': 'Trois semaines pour te connecter.',
+        'connect.step.discover.title': 'Découvrir',
+        'connect.step.discover.text': 'La vision et le cœur de La Rencontre.',
+        'connect.step.grow.title': 'Grandir',
+        'connect.step.grow.text': 'Nos valeurs et la manière dont nous vivons la foi ensemble.',
+        'connect.step.place.title': 'Trouver ta place',
+        'connect.step.place.text': 'Les prochaines étapes pour servir et t’engager.',
+        'connect.cta.kicker': 'Prochain parcours',
+        'connect.cta.title': 'Prêt à te connecter ?',
+        'connect.cta.text': 'Rends-toi à la table d’accueil le dimanche ou écris-nous pour recevoir les prochaines dates.',
+        'connect.cta.button': 'Nous contacter',
+    });
     return `
-    <div class="bg-paper text-ink font-sans min-h-screen">
-        <!-- Header -->
-        <section class="pt-20 pb-12 px-4 text-center">
-            <h1 class="text-4xl md:text-6xl font-black mb-6 font-serif tracking-tight">Vivre l'Église Ensemble</h1>
-            <p class="text-xl text-black/60 max-w-2xl mx-auto italic font-serif">
-                Se rassembler pour célébrer, s'encourager et grandir dans la foi : des moments essentiels à notre vie spirituelle.
-            </p>
-            <div class="mx-auto mt-8 h-1 w-24 bg-punch"></div>
-        </section>
+        <div class="min-h-screen overflow-hidden bg-[#abc4ce] text-white">
+            <!-- Hero LR Connect -->
+            <section class="relative px-5 pb-20 pt-16 md:px-10 md:pb-28 md:pt-24">
+                <div class="pointer-events-none absolute inset-0 opacity-25"
+                     style="background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,.55) 0 1px, transparent 1.5px), radial-gradient(circle at 80% 65%, rgba(255,255,255,.35) 0 1px, transparent 1.5px); background-size: 38px 38px, 57px 57px;"></div>
 
-        <!-- Liste des services (Carousel Horizontal) -->
-        <main class="w-full pb-20">
-             <!-- Container Scrollable -->
-            <div class="flex overflow-x-auto snap-x snap-mandatory gap-6 px-6 md:px-12 pb-8 scrollbar-hide">
-                ${servicesHtml || '<p class="text-center text-gray-500 italic w-full">Aucun service programmé pour le moment.</p>'}
-            </div>
-            
-            <!-- Scroll Hint (Visible only if overflow needed) -->
-            ${servicesList.length > 1 ? `
-            <div class="text-center text-black/40 text-sm mt-2 animate-bounce lg:hidden">
-                ← Balayez pour voir plus →
-            </div>` : ''}
+                <div class="relative mx-auto max-w-[1500px]">
+                    <p class="text-xs font-black uppercase tracking-[0.3em] text-white/65">${c['connect.hero.kicker']}</p>
+                    <h1 class="mt-5 font-display text-[19vw] font-extrabold leading-[0.72] tracking-[-0.085em] text-white sm:text-[8rem] lg:text-[10rem]">
+                        LR <span class="font-serif font-medium italic">Connect</span>
+                    </h1>
 
-            <!-- Info Banner -->
-            <div class="mx-auto max-w-5xl px-4 mt-16">
-                <div class="rounded-2xl bg-ink text-paper p-8 md:p-12 text-center">
-                    <h3 class="text-2xl font-black font-serif mb-4">Besoin de plus d'infos ?</h3>
-                    <p class="text-paper/80 max-w-xl mx-auto mb-8">
-                        Si vous avez des questions sur nos cultes, la garderie ou l'accessibilité, n'hésitez pas à nous contacter.
-                    </p>
-                    <a href="#/contact" class="inline-flex rounded-full bg-paper text-ink px-8 py-3 font-bold hover:bg-gray-100 transition-colors">
-                        Nous contacter
-                    </a>
+                    <div class="mt-14 grid items-center gap-12 lg:mt-24 lg:grid-cols-12 lg:gap-16">
+                        <div class="lg:col-span-7">
+                            <div class="relative aspect-[3/2] overflow-hidden rounded-[1.75rem] border-[7px] border-white shadow-2xl md:rounded-[2.5rem]">
+                                <img src="/assets/images/une-place-pour-toi.jpg" alt="Une communauté qui avance ensemble"
+                                     class="h-full w-full object-cover">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/5 to-transparent"></div>
+                                <div class="absolute inset-x-0 bottom-0 p-6 md:p-10">
+                                    <p class="font-serif text-xl font-medium tracking-wide md:text-3xl">église <span class="font-sans font-black uppercase">La Rencontre</span></p>
+                                    <p class="font-display text-5xl font-extrabold leading-none tracking-[-0.06em] md:text-8xl">connect<span class="text-glow">.</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-11 lg:col-span-5 lg:space-y-14">
+                            <article>
+                                <h2 class="inline-flex rounded-full border-[3px] border-white px-5 py-2 font-display text-2xl font-extrabold uppercase shadow-sm md:text-3xl">${c['connect.what.title']}</h2>
+                                <p class="mt-5 max-w-xl font-display text-xl font-medium uppercase leading-snug tracking-wide text-white/95 md:text-2xl">
+                                    ${c['connect.what.text']}
+                                </p>
+                            </article>
+
+                            <article>
+                                <h2 class="inline-flex rounded-full border-[3px] border-white px-5 py-2 font-display text-2xl font-extrabold uppercase shadow-sm md:text-3xl">${c['connect.when.title']}</h2>
+                                <p class="mt-5 max-w-xl font-display text-xl font-medium uppercase leading-snug tracking-wide text-white/95 md:text-2xl">
+                                    ${c['connect.when.text']}
+                                </p>
+                            </article>
+
+                            <article>
+                                <h2 class="inline-flex rounded-full border-[3px] border-white px-5 py-2 font-display text-2xl font-extrabold uppercase shadow-sm md:text-3xl">${c['connect.how.title']}</h2>
+                                <p class="mt-5 max-w-xl font-display text-xl font-medium uppercase leading-snug tracking-wide text-white/95 md:text-2xl">
+                                    ${c['connect.how.text']}
+                                </p>
+                            </article>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </main>
-    </div>
+            </section>
+
+            <!-- Déroulé du parcours -->
+            <section class="bg-[#f2efe8] px-5 py-20 text-ink md:px-10 md:py-28">
+                <div class="mx-auto max-w-[1500px]">
+                    <div class="grid gap-8 lg:grid-cols-12 lg:items-end">
+                        <div class="lg:col-span-7">
+                            <p class="mb-5 text-xs font-black uppercase tracking-[0.28em] text-black/40">${c['connect.journey.kicker']}</p>
+                            <h2 class="font-display text-5xl font-extrabold leading-[0.86] tracking-[-0.06em] md:text-8xl">
+                                ${c['connect.journey.title']}
+                            </h2>
+                        </div>
+                        <p class="max-w-xl font-serif text-xl italic leading-relaxed text-black/55 md:text-2xl lg:col-span-4 lg:col-start-9">
+                            Un espace simple et convivial pour comprendre qui nous sommes et avancer avec nous.
+                        </p>
+                    </div>
+
+                    <div class="mt-14 grid gap-5 md:grid-cols-3">
+                        <article class="flex min-h-[320px] flex-col justify-between rounded-[2rem] bg-punch p-7 text-white md:p-9">
+                            <span class="text-sm font-black tracking-[0.2em]">01</span>
+                            <div><h3 class="font-serif text-4xl font-semibold italic">${c['connect.step.discover.title']}</h3><p class="mt-4 text-white/75">${c['connect.step.discover.text']}</p></div>
+                        </article>
+                        <article class="flex min-h-[320px] flex-col justify-between rounded-[2rem] bg-glow p-7 md:p-9">
+                            <span class="text-sm font-black tracking-[0.2em]">02</span>
+                            <div><h3 class="font-serif text-4xl font-semibold italic">${c['connect.step.grow.title']}</h3><p class="mt-4 text-black/60">${c['connect.step.grow.text']}</p></div>
+                        </article>
+                        <article class="flex min-h-[320px] flex-col justify-between rounded-[2rem] bg-ink p-7 text-white md:p-9">
+                            <span class="text-sm font-black tracking-[0.2em]">03</span>
+                            <div><h3 class="font-serif text-4xl font-semibold italic">${c['connect.step.place.title']}</h3><p class="mt-4 text-white/65">${c['connect.step.place.text']}</p></div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inscription -->
+            <section class="bg-punch px-5 py-20 md:px-10 md:py-24">
+                <div class="mx-auto flex max-w-[1500px] flex-col items-start justify-between gap-10 md:flex-row md:items-end">
+                    <div>
+                        <p class="mb-5 text-xs font-black uppercase tracking-[0.28em] text-white/55">${c['connect.cta.kicker']}</p>
+                        <h2 class="max-w-4xl font-display text-5xl font-extrabold leading-[0.88] md:text-8xl">${c['connect.cta.title']}</h2>
+                        <p class="mt-6 max-w-2xl font-serif text-xl text-white/75">${c['connect.cta.text']}</p>
+                    </div>
+                    <a href="#/contact" class="shrink-0 rounded-full bg-white px-8 py-4 font-black text-ink transition hover:scale-105">${c['connect.cta.button']}</a>
+                </div>
+            </section>
+        </div>
     `;
 }
