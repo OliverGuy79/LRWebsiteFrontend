@@ -1,6 +1,8 @@
 import { api } from '../services/api.service.js';
 import { tAll } from '../services/site-content.service.js';
 
+const kidzHeroVideoUrl = new URL('../../assets/videos/kidz-hero.mp4', import.meta.url).href;
+
 export async function kidz() {
     // Récupération des articles filtrés par tag "kidz" + contenu éditorial
     let articles = [];
@@ -83,7 +85,7 @@ export async function kidz() {
             <video class="absolute inset-0 h-full w-full object-cover" autoplay muted loop playsinline preload="metadata"
                    poster="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1600&q=80"
                    aria-label="Des enfants participent à un atelier créatif">
-                <source src="/assets/videos/kidz-hero.mp4" type="video/mp4">
+                <source src="${kidzHeroVideoUrl}" type="video/mp4">
             </video>
             <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/25 to-black/10"></div>
             <div class="pointer-events-none absolute inset-0 bg-punch/15 mix-blend-color"></div>

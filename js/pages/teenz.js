@@ -1,6 +1,8 @@
 import { api } from '../services/api.service.js';
 import { tAll } from '../services/site-content.service.js';
 
+const teenzHeroVideoUrl = new URL('../../assets/videos/teenz-hero.mp4', import.meta.url).href;
+
 export async function teenz() {
     let articles = [];
     const [articlesResponse, c] = await Promise.all([
@@ -78,7 +80,7 @@ export async function teenz() {
             <video class="absolute inset-0 h-full w-full object-cover" autoplay muted loop playsinline preload="metadata"
                    poster="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1600&q=80"
                    aria-label="Un groupe de jeunes partage un moment ensemble">
-                <source src="/assets/videos/teenz-hero.mp4" type="video/mp4">
+                <source src="${teenzHeroVideoUrl}" type="video/mp4">
             </video>
             <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/15"></div>
             <div class="pointer-events-none absolute inset-0 bg-punch/20 mix-blend-color"></div>

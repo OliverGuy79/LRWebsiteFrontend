@@ -2,6 +2,8 @@
 import { api } from '../services/api.service.js';
 import { tAll } from '../services/site-content.service.js';
 
+const accueilHeroVideoUrl = new URL('../../assets/videos/accueil.mp4', import.meta.url).href;
+
 const YOUTUBE_PLAYLIST_ID = 'PLJpx00qiABt1FSmOul4Oo4LmmB6FXJBbd';
 
 export async function accueil() {
@@ -301,7 +303,7 @@ export async function accueil() {
                     loop
                     playsinline
                     poster="https://images.unsplash.com/photo-1519491050282-cf00c82424bd?auto=format&fit=crop&w=1920&q=80">
-                    <source src="assets/videos/accueil.mp4" type="video/mp4">
+                    <source src="${accueilHeroVideoUrl}" type="video/mp4">
                 </video>
                 <!-- Overlay sombre -->
                 <div class="absolute inset-0 bg-black/50"></div>
