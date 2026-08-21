@@ -6,7 +6,9 @@ export class ApiService {
         // En prod, l'URL est https://lrwebsitebackend.onrender.com
         // Pour le développement local avec proxy, on veut une URL vide (relative).
         // Vite expose uniquement les variables commençant par VITE_.
-        this.baseUrl = import.meta.env.VITE_API_URL || '';
+        const productionApiUrl = 'https://eglise-la-rencontre-api.onrender.com';
+        const isLocalDevelopment = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        this.baseUrl = import.meta.env.VITE_API_URL || (isLocalDevelopment ? '' : productionApiUrl);
         this.youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY || '';
         this.youtubeBaseUrl = 'https://www.googleapis.com/youtube/v3';
         console.log("API Base URL:", this.baseUrl || '(relative/proxy)');
